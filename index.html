@@ -1,0 +1,2888 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>النظام الالكتروني الموحد لتحصيل رسوم خدمات النقل البري</title>
+    <style>
+        /* CSS Reset and Global Styles */
+        :root {
+            --primary-color: #0d47a1; /* Deep Blue */
+            --primary-light: #1976d2;
+            --primary-dark: #002171;
+            --secondary-color: #4caf50; /* Green */
+            --accent-color: #ffab40; /* Amber */
+            --background-color: #f5f7fa;
+            --surface-color: #ffffff;
+            --text-color: #333;
+            --text-color-light: #f1f1f1;
+            --border-color: #e0e0e0;
+            --error-color: #d32f2f;
+            --success-color: #2e7d32;
+            --font-family: 'Tajawal', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            --shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+            --border-radius: 8px;
+        }
+
+        @import url('https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700&display=swap');
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: var(--font-family);
+            background-color: var(--background-color);
+            color: var(--text-color);
+            line-height: 1.6;
+            direction: rtl;
+            font-size: 16px;
+        }
+
+        /* --- Login Page Styles --- */
+        #login-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-light) 100%);
+        }
+
+        .login-box {
+            background-color: var(--surface-color);
+            padding: 2.5rem;
+            border-radius: var(--border-radius);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+            width: 100%;
+            max-width: 400px;
+            text-align: center;
+            animation: fadeIn 0.5s ease-in-out;
+        }
+
+        .login-box h2 {
+            margin-bottom: 0.5rem;
+            color: var(--primary-dark);
+            font-weight: 700;
+        }
+
+        .login-box p {
+            margin-bottom: 1.5rem;
+            color: #666;
+        }
+
+        .input-group {
+            margin-bottom: 1.5rem;
+            text-align: right;
+        }
+
+        .input-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+            color: #555;
+        }
+
+        .input-group input {
+            width: 100%;
+            padding: 0.8rem;
+            border: 1px solid var(--border-color);
+            border-radius: var(--border-radius);
+            font-family: var(--font-family);
+            font-size: 1rem;
+            transition: border-color 0.3s, box-shadow 0.3s;
+        }
+
+        .input-group input:focus {
+            outline: none;
+            border-color: var(--primary-light);
+            box-shadow: 0 0 0 3px rgba(25, 118, 210, 0.2);
+        }
+        
+        #login-error {
+            color: var(--error-color);
+            margin-bottom: 1rem;
+            font-weight: 500;
+            min-height: 20px;
+        }
+
+        /* --- Main App Styles --- */
+        #app-container {
+            display: none; /* Hidden by default */
+            grid-template-columns: 250px 1fr;
+            grid-template-rows: 60px 1fr 40px;
+            grid-template-areas:
+                "sidebar header"
+                "sidebar main"
+                "sidebar footer";
+            height: 100vh;
+            transition: grid-template-columns 0.3s ease-in-out;
+        }
+
+        #app-container.sidebar-collapsed {
+            grid-template-columns: 70px 1fr;
+        }
+        
+        .main-header {
+            grid-area: header;
+            background-color: var(--surface-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 1.5rem;
+            border-bottom: 1px solid var(--border-color);
+        }
+        
+        .header-left {
+            display: flex;
+            align-items: center;
+        }
+        
+        #sidebar-toggle {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: var(--text-color);
+            margin-left: 1rem;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+        }
+
+        .user-info span {
+            margin-left: 0.8rem;
+            font-weight: 500;
+        }
+
+        #logout-btn {
+            background: none;
+            border: none;
+            color: var(--error-color);
+            font-size: 1rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            font-weight: 500;
+        }
+        #logout-btn i {
+            margin-right: 5px;
+        }
+
+        /* --- Sidebar Styles --- */
+        .sidebar {
+            grid-area: sidebar;
+            background-color: var(--primary-dark);
+            color: var(--text-color-light);
+            padding: 1.5rem 0;
+            display: flex;
+            flex-direction: column;
+            transition: width 0.3s ease-in-out;
+            overflow-x: hidden;
+        }
+
+        .sidebar-header {
+            text-align: center;
+            padding: 0 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .sidebar-header h3 {
+            font-weight: 700;
+            font-size: 1.2rem;
+            white-space: nowrap;
+        }
+        .sidebar-header .logo-text {
+            opacity: 1;
+            transition: opacity 0.2s ease;
+        }
+        #app-container.sidebar-collapsed .logo-text {
+           opacity: 0;
+           width: 0;
+           height: 0;
+           display: none;
+        }
+        .sidebar-header .logo-icon {
+            display: none;
+            font-size: 1.8rem;
+        }
+        #app-container.sidebar-collapsed .logo-icon {
+            display: inline;
+        }
+
+        .sidebar-nav {
+            list-style-type: none;
+            flex-grow: 1;
+        }
+
+        .sidebar-nav li a {
+            display: flex;
+            align-items: center;
+            padding: 1rem 1.5rem;
+            color: var(--text-color-light);
+            text-decoration: none;
+            transition: background-color 0.3s, padding-right 0.3s;
+            white-space: nowrap;
+        }
+
+        .sidebar-nav li a:hover, .sidebar-nav li a.active {
+            background-color: rgba(255, 255, 255, 0.1);
+            border-right: 4px solid var(--accent-color);
+            padding-right: calc(1.5rem - 4px);
+        }
+
+        .sidebar-nav li a i {
+            font-size: 1.2rem;
+            margin-left: 1rem;
+            width: 24px;
+            text-align: center;
+        }
+        #app-container.sidebar-collapsed .sidebar-nav li a .nav-text {
+            display: none;
+        }
+        #app-container.sidebar-collapsed .sidebar-nav li a {
+            justify-content: center;
+            padding: 1rem;
+        }
+        #app-container.sidebar-collapsed .sidebar-nav li a:hover,
+        #app-container.sidebar-collapsed .sidebar-nav li a.active {
+            padding-right: 1rem;
+            border-right: none;
+        }
+
+
+        /* --- Main Content Area --- */
+        .main-content {
+            grid-area: main;
+            overflow-y: auto;
+            padding: 2rem;
+        }
+
+        .page {
+            display: none;
+            animation: fadeIn 0.4s ease-in-out;
+        }
+
+        .page.active {
+            display: block;
+        }
+
+        .page-header {
+            margin-bottom: 2rem;
+            border-bottom: 2px solid var(--border-color);
+            padding-bottom: 1rem;
+        }
+        .page-header h1 {
+            color: var(--primary-dark);
+            font-size: 2rem;
+        }
+
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .dashboard-card {
+            background-color: var(--surface-color);
+            padding: 1.5rem;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            cursor: pointer;
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+        .dashboard-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
+        }
+        .dashboard-card i {
+            font-size: 3rem;
+            color: var(--primary-light);
+            margin-bottom: 1rem;
+        }
+        .dashboard-card h3 {
+            color: var(--primary-dark);
+            font-size: 1.2rem;
+            margin-bottom: 0.5rem;
+        }
+        .dashboard-card p {
+            color: #666;
+            font-size: 0.9rem;
+        }
+
+
+        /* --- Generic Components (Buttons, Cards, Forms, Tables) --- */
+        .btn {
+            padding: 0.7rem 1.5rem;
+            border: none;
+            border-radius: var(--border-radius);
+            cursor: pointer;
+            font-family: var(--font-family);
+            font-size: 1rem;
+            font-weight: 500;
+            transition: background-color 0.3s, transform 0.2s;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            text-decoration: none;
+        }
+        .btn i {
+            margin-left: 8px;
+        }
+        .btn:active {
+            transform: scale(0.98);
+        }
+        .btn-primary {
+            background-color: var(--primary-light);
+            color: var(--text-color-light);
+        }
+        .btn-primary:hover {
+            background-color: var(--primary-color);
+        }
+        .btn-secondary {
+            background-color: var(--secondary-color);
+            color: var(--text-color-light);
+        }
+        .btn-secondary:hover {
+            background-color: #388e3c;
+        }
+        .btn-danger {
+            background-color: var(--error-color);
+            color: var(--text-color-light);
+        }
+        .btn-danger:hover {
+            background-color: #c62828;
+        }
+        .btn-light {
+            background-color: #e0e0e0;
+            color: var(--text-color);
+        }
+        .btn-light:hover {
+            background-color: #bdbdbd;
+        }
+
+        .card {
+            background-color: var(--surface-color);
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+        .card-header {
+            padding-bottom: 1rem;
+            margin-bottom: 1rem;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .card-header h3 {
+            color: var(--primary-dark);
+            font-size: 1.2rem;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+        .form-group label {
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+        }
+        .form-group input,
+        .form-group select {
+            width: 100%;
+            padding: 0.7rem;
+            border: 1px solid var(--border-color);
+            border-radius: var(--border-radius);
+            font-family: var(--font-family);
+            background-color: #fff;
+        }
+        .form-group input:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: var(--primary-light);
+            box-shadow: 0 0 0 2px rgba(25, 118, 210, 0.2);
+        }
+        .form-group input[disabled],
+        .form-group select[disabled] {
+            background-color: #f0f0f0;
+            cursor: not-allowed;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background-color: var(--surface-color);
+            box-shadow: var(--shadow);
+            border-radius: var(--border-radius);
+            overflow: hidden;
+        }
+
+        table thead tr {
+            background-color: var(--primary-dark);
+            color: var(--text-color-light);
+            text-align: right;
+            font-weight: bold;
+        }
+
+        table th, table td {
+            padding: 12px 15px;
+        }
+
+        table tbody tr {
+            border-bottom: 1px solid var(--border-color);
+        }
+        table tbody tr:nth-of-type(even) {
+            background-color: #f9f9f9;
+        }
+        table tbody tr:last-of-type {
+            border-bottom: 2px solid var(--primary-light);
+        }
+        table tbody tr:hover {
+            background-color: #f1f1f1;
+        }
+        .action-btns {
+            display: flex;
+            gap: 8px;
+        }
+        .action-btns .btn {
+            padding: 5px 10px;
+            font-size: 0.9rem;
+        }
+
+        /* --- Tabs --- */
+        .tabs {
+            display: flex;
+            border-bottom: 2px solid var(--border-color);
+            margin-bottom: 1.5rem;
+        }
+        .tab-link {
+            padding: 10px 20px;
+            cursor: pointer;
+            border: none;
+            background: none;
+            font-size: 1.1rem;
+            font-weight: 500;
+            color: #666;
+            border-bottom: 3px solid transparent;
+            margin-bottom: -2px;
+            transition: color 0.3s, border-color 0.3s;
+        }
+        .tab-link:hover {
+            color: var(--primary-light);
+        }
+        .tab-link.active {
+            color: var(--primary-color);
+            border-bottom-color: var(--primary-color);
+        }
+        .tab-content {
+            display: none;
+        }
+        .tab-content.active {
+            display: block;
+        }
+
+        /* --- Footer Styles --- */
+        .main-footer {
+            grid-area: footer;
+            background-color: #e9ecef;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 1.5rem;
+            font-size: 0.9rem;
+            color: #555;
+            border-top: 1px solid var(--border-color);
+        }
+        
+        #sync-status {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        #sync-status .status-indicator {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background-color: var(--error-color);
+            animation: pulse-red 2s infinite;
+        }
+        #sync-status .status-indicator.online {
+            background-color: var(--success-color);
+            animation: pulse-green 2s infinite;
+        }
+
+        /* --- Modal Styles --- */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0, 0, 0, 0.5);
+            justify-content: center;
+            align-items: center;
+        }
+        .modal.show {
+            display: flex;
+        }
+
+        .modal-content {
+            background-color: var(--surface-color);
+            margin: auto;
+            padding: 2rem;
+            border-radius: var(--border-radius);
+            width: 90%;
+            max-width: 500px;
+            animation: slideIn 0.3s ease-out;
+        }
+        
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 1rem;
+            margin-bottom: 1rem;
+        }
+        .modal-title {
+            font-size: 1.5rem;
+            color: var(--primary-dark);
+        }
+        .close-modal {
+            color: #aaa;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        .close-modal:hover,
+        .close-modal:focus {
+            color: black;
+        }
+        
+        /* --- Receipt Print Styles --- */
+        #receipt-modal .modal-content {
+            max-width: 800px;
+        }
+        .receipt-body {
+            border: 2px solid #000;
+            padding: 20px;
+            font-family: 'Courier New', Courier, monospace;
+        }
+        .receipt-header {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .receipt-header h3 {
+            margin: 0;
+            font-size: 1.5em;
+        }
+        .receipt-header p {
+            margin: 5px 0;
+        }
+        .receipt-info, .receipt-details {
+            margin-bottom: 20px;
+        }
+        .receipt-info table, .receipt-details table {
+            width: 100%;
+            font-size: 1em;
+            box-shadow: none;
+            border-radius: 0;
+        }
+        .receipt-info th, .receipt-info td, .receipt-details th, .receipt-details td {
+            padding: 8px;
+            text-align: right;
+            border: 1px solid #ccc;
+        }
+        .receipt-details .total-row {
+            font-weight: bold;
+            font-size: 1.2em;
+        }
+        .receipt-footer {
+            margin-top: 30px;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        @media print {
+            body * {
+                visibility: hidden;
+            }
+            #receipt-to-print, #receipt-to-print * {
+                visibility: visible;
+            }
+            #receipt-to-print {
+                position: absolute;
+                left: 0;
+                top: 0;
+                width: 100%;
+            }
+            .modal-footer {
+                display: none;
+            }
+        }
+        
+        /* --- Animations --- */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: scale(0.98); }
+            to { opacity: 1; transform: scale(1); }
+        }
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes pulse-red {
+            0% { box-shadow: 0 0 0 0 rgba(211, 47, 47, 0.7); }
+            70% { box-shadow: 0 0 0 10px rgba(211, 47, 47, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(211, 47, 47, 0); }
+        }
+        @keyframes pulse-green {
+            0% { box-shadow: 0 0 0 0 rgba(46, 125, 50, 0.7); }
+            70% { box-shadow: 0 0 0 10px rgba(46, 125, 50, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(46, 125, 50, 0); }
+        }
+
+        /* --- Utility & Responsive Classes --- */
+        .hidden { display: none !important; }
+        .text-center { text-align: center; }
+        .mt-2 { margin-top: 1rem; }
+        .mb-2 { margin-bottom: 1rem; }
+
+        @media (max-width: 992px) {
+             #app-container {
+                grid-template-columns: 70px 1fr;
+            }
+            #app-container .sidebar-nav .nav-text {
+                display: none;
+            }
+            #app-container .sidebar-nav li a {
+                justify-content: center;
+                padding: 1rem;
+            }
+            .logo-text {
+                display: none;
+            }
+            .logo-icon {
+                display: inline !important;
+            }
+            #sidebar-toggle {
+                display: none; /* Hide toggle on medium screens as sidebar is always collapsed */
+            }
+        }
+
+        @media (max-width: 768px) {
+            #app-container {
+                grid-template-columns: 1fr;
+                grid-template-rows: 60px 50px 1fr 40px;
+                grid-template-areas:
+                    "header"
+                    "sidebar"
+                    "main"
+                    "footer";
+                height: auto;
+                min-height: 100vh;
+            }
+            .sidebar {
+                flex-direction: row;
+                padding: 0;
+                align-items: center;
+                overflow-x: auto;
+                background-color: var(--primary-color);
+            }
+            .sidebar-header {
+                display: none;
+            }
+            .sidebar-nav {
+                display: flex;
+                flex-direction: row;
+                width: 100%;
+                justify-content: space-around;
+            }
+            .sidebar-nav li {
+                flex: 1;
+            }
+            .sidebar-nav li a {
+                justify-content: center;
+                padding: 0.8rem 0.5rem;
+                border-right: none !important;
+                border-bottom: 4px solid transparent;
+            }
+            .sidebar-nav li a:hover, .sidebar-nav li a.active {
+                border-bottom: 4px solid var(--accent-color);
+                padding-right: 0.5rem !important;
+            }
+            .sidebar-nav li a .nav-text {
+                display: none;
+            }
+            .sidebar-nav li a i {
+                margin: 0;
+            }
+
+            .main-content {
+                padding: 1rem;
+            }
+            .page-header h1 {
+                font-size: 1.5rem;
+            }
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+            .main-header {
+                padding: 0 1rem;
+            }
+            #sidebar-toggle {
+                display: none;
+            }
+            .user-info span, .main-footer {
+                font-size: 0.8rem;
+            }
+        }
+        .stat-card {
+            background: var(--surface-color);
+            border-radius: var(--border-radius);
+            padding: 1.5rem;
+            box-shadow: var(--shadow);
+            text-align: center;
+        }
+        .stat-card h4 {
+            color: #6c757d;
+            font-size: 1rem;
+            margin-bottom: 0.5rem;
+        }
+        .stat-card .stat-number {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--primary-dark);
+        }
+        .stat-card .stat-description {
+            color: #6c757d;
+            font-size: 0.9rem;
+        }
+
+    </style>
+    <!-- Font Awesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+
+    <!-- Login Container -->
+    <div id="login-container">
+        <div class="login-box">
+            <i class="fas fa-shipping-fast" style="font-size: 3rem; color: var(--primary-color); margin-bottom: 1rem;"></i>
+            <h2>النظام الالكتروني الموحد</h2>
+            <p>لتحصيل رسوم خدمات النقل البري</p>
+            <form id="login-form">
+                <div id="login-error"></div>
+                <div class="input-group">
+                    <label for="username">اسم المستخدم</label>
+                    <input type="text" id="username" required autocomplete="username">
+                </div>
+                <div class="input-group">
+                    <label for="password">كلمة المرور</label>
+                    <input type="password" id="password" required autocomplete="current-password">
+                </div>
+                <button type="submit" class="btn btn-primary" style="width: 100%;">تسجيل الدخول</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Main Application Container -->
+    <div id="app-container">
+        <!-- Header -->
+        <header class="main-header">
+            <div class="header-left">
+                <button id="sidebar-toggle"><i class="fas fa-bars"></i></button>
+                <h1 id="page-title-header" style="font-size: 1.3rem; color: var(--primary-dark); margin-right: 1rem;">الرئيسية</h1>
+            </div>
+            <div class="user-info">
+                <span id="welcome-user"></span>
+                <button id="logout-btn"><i class="fas fa-sign-out-alt"></i> خروج</button>
+            </div>
+        </header>
+
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <i class="fas fa-road logo-icon"></i>
+                <h3 class="logo-text">نظام النقل البري</h3>
+            </div>
+            <ul class="sidebar-nav" id="sidebar-nav">
+                <!-- Nav items will be generated by JS -->
+            </ul>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- All pages will be injected here -->
+
+            <!-- Home Page -->
+            <div id="page-home" class="page">
+                <div id="admin-dashboard-content">
+                    <div class="page-header"><h1>لوحة تحكم المسؤول</h1></div>
+                    <div class="dashboard-grid">
+                        <div class="dashboard-card" data-page="system-setup">
+                            <i class="fas fa-cogs"></i>
+                            <h3>تهيئة النظام</h3>
+                            <p>إدارة المستخدمين والفروع وأنواع السندات</p>
+                        </div>
+                        <div class="dashboard-card" data-page="activity-monitoring">
+                            <i class="fas fa-chart-line"></i>
+                            <h3>متابعة حركة النشاط</h3>
+                            <p>عرض النشاط العام والتفصيلي للمحصلين والفروع</p>
+                        </div>
+                        <div class="dashboard-card" data-page="audit-log">
+                            <i class="fas fa-history"></i>
+                            <h3>سجل العمليات</h3>
+                            <p>تتبع جميع الإجراءات التي تمت في النظام</p>
+                        </div>
+                        <div class="dashboard-card" data-page="search">
+                            <i class="fas fa-search"></i>
+                            <h3>البحث</h3>
+                            <p>البحث عن حافلات، سائقين، سندات، أو محصلين</p>
+                        </div>
+                         <div class="dashboard-card" data-page="reports">
+                            <i class="fas fa-file-invoice-dollar"></i>
+                            <h3>التقارير</h3>
+                            <p>عرض التقارير المالية والإحصائية الشاملة</p>
+                        </div>
+                    </div>
+                </div>
+                <div id="collector-dashboard-content">
+                     <div class="page-header">
+                         <h1>لوحة تحكم المحصل</h1>
+                         <p id="collector-location-header" style="color: #555; font-size: 1rem;"></p>
+                    </div>
+                     <div class="dashboard-grid">
+                        <div class="dashboard-card" data-page="issue-receipt">
+                            <i class="fas fa-receipt"></i>
+                            <h3>قطع سند رسوم</h3>
+                            <p>تسجيل سند جديد للمركبات</p>
+                        </div>
+                         <div class="dashboard-card" data-page="my-activity">
+                            <i class="fas fa-tasks"></i>
+                            <h3>نشاطي اليومي</h3>
+                            <p>عرض السندات التي قمت بقطعها اليوم</p>
+                        </div>
+                    </div>
+                </div>
+                <div id="supervisor-dashboard-content">
+                     <div class="page-header"><h1>لوحة تحكم المشرف</h1></div>
+                     <div class="dashboard-grid">
+                        <div class="dashboard-card" data-page="activity-monitoring">
+                            <i class="fas fa-chart-line"></i>
+                            <h3>متابعة حركة النشاط</h3>
+                            <p>عرض النشاط في الفروع والنقاط المخصصة لك</p>
+                        </div>
+                        <div class="dashboard-card" data-page="reports">
+                            <i class="fas fa-file-invoice-dollar"></i>
+                            <h3>التقارير</h3>
+                            <p>عرض التقارير المالية والإحصائية</p>
+                        </div>
+                     </div>
+                </div>
+            </div>
+
+            <!-- System Setup Page (Admin) -->
+            <div id="page-system-setup" class="page">
+                <div class="page-header"><h1>تهيئة النظام</h1></div>
+                <div class="tabs">
+                    <button class="tab-link active" onclick="openTab(event, 'tab-users')">إدارة المستخدمين</button>
+                    <button class="tab-link" onclick="openTab(event, 'tab-branches')">إدارة الفروع</button>
+                    <button class="tab-link" onclick="openTab(event, 'tab-receipt-types')">إدارة سندات التحصيل</button>
+                </div>
+
+                <!-- Users Tab -->
+                <div id="tab-users" class="tab-content active">
+                    <div class="card">
+                        <div class="card-header">
+                            <h3>إضافة / تعديل مستخدم</h3>
+                        </div>
+                        <form id="user-form">
+                            <input type="hidden" id="user-id">
+                            <div class="form-grid">
+                                <div class="form-group">
+                                    <label for="user-username">اسم المستخدم</label>
+                                    <input type="text" id="user-username" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="user-password">كلمة المرور</label>
+                                    <input type="password" id="user-password" placeholder="اتركها فارغة لعدم التغيير">
+                                </div>
+                                <div class="form-group">
+                                    <label for="user-role">نوع الحساب</label>
+                                    <select id="user-role" required>
+                                        <option value="admin">أدمن</option>
+                                        <option value="supervisor">مشرف</option>
+                                        <option value="collector">محصل</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label for="user-status">حالة الحساب</label>
+                                    <select id="user-status" required>
+                                        <option value="active">نشط</option>
+                                        <option value="inactive">متوقف</option>
+                                    </select>
+                                </div>
+                                <div class="form-group hidden" id="user-reason-group">
+                                    <label for="user-reason">سبب الإيقاف</label>
+                                    <input type="text" id="user-reason">
+                                </div>
+                            </div>
+                            <div id="user-permissions-group" class="hidden mt-2">
+                                <hr class="mb-2">
+                                <h4>الصلاحيات</h4>
+                                <div class="form-grid">
+                                    <div class="form-group">
+                                        <label for="user-branch">الفرع</label>
+                                        <select id="user-branch"></select>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="user-point">النقطة</label>
+                                        <select id="user-point"></select>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="mt-2">
+                                <button type="submit" class="btn btn-primary">حفظ المستخدم</button>
+                                <button type="button" id="cancel-user-edit" class="btn btn-light hidden">إلغاء التعديل</button>
+                            </div>
+                        </form>
+                    </div>
+                    <div class="card">
+                        <div class="card-header"><h3>قائمة المستخدمين</h3></div>
+                        <div style="overflow-x:auto;">
+                            <table id="users-table">
+                                <thead>
+                                    <tr>
+                                        <th>اسم المستخدم</th>
+                                        <th>نوع الحساب</th>
+                                        <th>الفرع/النقطة</th>
+                                        <th>الحالة</th>
+                                        <th>إجراءات</th>
+                                    </tr>
+                                </thead>
+                                <tbody></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Branches Tab -->
+                <div id="tab-branches" class="tab-content">
+                    <div class="form-grid">
+                        <div class="card">
+                            <div class="card-header"><h3>إضافة فرع جديد</h3></div>
+                            <form id="branch-form">
+                                <div class="form-group">
+                                    <label for="branch-name">اسم الفرع</label>
+                                    <input type="text" id="branch-name" required>
+                                </div>
+                                <button type="submit" class="btn btn-primary mt-2">إضافة فرع</button>
+                            </form>
+                            <div class="card-header mt-2"><h3>قائمة الفروع</h3></div>
+                            <ul id="branches-list" class="list-group"></ul>
+                        </div>
+                        <div class="card">
+                            <div class="card-header"><h3>إضافة نقطة تحصيل</h3></div>
+                            <form id="point-form">
+                                <div class="form-group">
+                                    <label for="point-branch-select">اختر الفرع</label>
+                                    <select id="point-branch-select" required></select>
+                                </div>
+                                <div class="form-group">
+                                    <label for="point-name">اسم النقطة</label>
+                                    <input type="text" id="point-name" required>
+                                </div>
+                                <button type="submit" class="btn btn-primary mt-2">إضافة نقطة</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Receipt Types Tab -->
+                <div id="tab-receipt-types" class="tab-content">
+                    <div class="card">
+                        <div class="card-header"><h3>إضافة / تعديل سند تحصيل</h3></div>
+                        <form id="receipt-type-form">
+                            <input type="hidden" id="receipt-type-id">
+                            <div class="form-grid">
+                                <div class="form-group">
+                                    <label for="receipt-type-name">اسم السند</label>
+                                    <input type="text" id="receipt-type-name" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="receipt-type-amount-type">نوع المبلغ</label>
+                                    <select id="receipt-type-amount-type" required>
+                                        <option value="fixed">مبلغ ثابت</option>
+                                        <option value="variable">مبلغ متغير</option>
+                                    </select>
+                                </div>
+                                <div class="form-group" id="receipt-type-amount-group">
+                                    <label for="receipt-type-amount">قيمة السند</label>
+                                    <input type="number" id="receipt-type-amount" min="0" step="any">
+                                </div>
+                            </div>
+                            <div class="mt-2">
+                                <button type="submit" class="btn btn-primary">حفظ السند</button>
+                                <button type="button" id="cancel-receipt-type-edit" class="btn btn-light hidden">إلغاء التعديل</button>
+                            </div>
+                        </form>
+                    </div>
+                    <div class="card">
+                        <div class="card-header"><h3>قائمة سندات التحصيل</h3></div>
+                        <div style="overflow-x:auto;">
+                            <table id="receipt-types-table">
+                                <thead><tr><th>اسم السند</th><th>نوع المبلغ</th><th>القيمة</th><th>إجراءات</th></tr></thead>
+                                <tbody></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Activity Monitoring Page (Admin/Supervisor) -->
+            <div id="page-activity-monitoring" class="page">
+                 <div class="page-header"><h1>متابعة حركة النشاط</h1></div>
+                 <div class="card">
+                     <form id="activity-filter-form">
+                         <div class="form-grid">
+                             <div class="form-group">
+                                 <label for="activity-date-from">من تاريخ</label>
+                                 <input type="date" id="activity-date-from" required>
+                             </div>
+                             <div class="form-group">
+                                 <label for="activity-date-to">إلى تاريخ</label>
+                                 <input type="date" id="activity-date-to" required>
+                             </div>
+                         </div>
+                         <div class="mt-2" style="display: flex; gap: 20px; flex-wrap: wrap; align-items: center;">
+                            <div class="form-group" style="flex-direction: row; align-items: center; gap: 10px;">
+                                <input type="radio" name="activity_type" id="activity-type-general" value="general" checked>
+                                <label for="activity-type-general">النشاط العام</label>
+                            </div>
+                            <div class="form-group" style="flex-direction: row; align-items: center; gap: 10px;">
+                                <input type="radio" name="activity_type" id="activity-type-branch" value="branch">
+                                <label for="activity-type-branch">تفصيلي حسب الفرع</label>
+                            </div>
+                             <div class="form-group" style="flex-direction: row; align-items: center; gap: 10px;">
+                                <input type="radio" name="activity_type" id="activity-type-collectors" value="collectors">
+                                <label for="activity-type-collectors">نشاط المحصلين</label>
+                            </div>
+                             <div class="form-group hidden" id="activity-branch-filter-group">
+                                 <label for="activity-branch-select">اختر الفرع</label>
+                                 <select id="activity-branch-select"></select>
+                             </div>
+                             <button type="submit" class="btn btn-primary">عرض النتائج</button>
+                         </div>
+                     </form>
+                 </div>
+                 <div id="activity-results" class="mt-2"></div>
+            </div>
+
+            <!-- Audit Log Page (Admin) -->
+            <div id="page-audit-log" class="page">
+                <div class="page-header"><h1>سجل العمليات</h1></div>
+                 <div class="tabs">
+                    <button class="tab-link active" onclick="openTab(event, 'tab-log-general')">السجل العام</button>
+                    <button class="tab-link" onclick="openTab(event, 'tab-log-detailed')">السجل المفصل</button>
+                </div>
+
+                <div id="tab-log-general" class="tab-content active">
+                     <div class="card">
+                        <div class="card-header">
+                            <h3>كافة عمليات النظام</h3>
+                            <button class="btn btn-danger" id="clear-audit-log-btn">مسح السجل</button>
+                        </div>
+                        <div style="overflow-x:auto;">
+                            <table id="audit-log-table">
+                                <thead><tr><th>الوقت</th><th>المستخدم</th><th>الإجراء</th><th>التفاصيل</th></tr></thead>
+                                <tbody></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="tab-log-detailed" class="tab-content">
+                    <div class="card">
+                        <div class="card-header"><h3>فلاتر البحث المفصل</h3></div>
+                        <form id="log-filter-form">
+                            <div class="form-grid">
+                                <div class="form-group"><label for="log-filter-branch">الفرع</label><select id="log-filter-branch"></select></div>
+                                <div class="form-group"><label for="log-filter-point">النقطة</label><select id="log-filter-point"></select></div>
+                                <div class="form-group"><label for="log-filter-user">المستخدم</label><select id="log-filter-user"></select></div>
+                                <div class="form-group"><label for="log-filter-date-from">من تاريخ</label><input type="date" id="log-filter-date-from"></div>
+                                <div class="form-group"><label for="log-filter-date-to">إلى تاريخ</label><input type="date" id="log-filter-date-to"></div>
+                            </div>
+                            <button type="submit" class="btn btn-primary mt-2">بحث</button>
+                        </form>
+                    </div>
+                    <div id="log-detailed-results"></div>
+                </div>
+            </div>
+            
+            <!-- Search Page (Admin) -->
+            <div id="page-search" class="page">
+                <div class="page-header"><h1>البحث</h1></div>
+                <!-- Search functionality to be added here -->
+                 <div class="card">
+                     <form id="main-search-form">
+                         <div class="form-grid">
+                             <div class="form-group">
+                                 <label for="search-type">نوع البحث</label>
+                                 <select id="search-type">
+                                     <option value="bus">البحث عن حافلة</option>
+                                     <option value="driver">البحث عن سائق</option>
+                                     <option value="collector">البحث عن محصل</option>
+                                     <option value="receipt">البحث عن سند</option>
+                                 </select>
+                             </div>
+                             <div class="form-group">
+                                 <label for="search-term" id="search-term-label">رقم المركبة</label>
+                                 <input type="text" id="search-term" placeholder="أدخل قيمة البحث هنا...">
+                             </div>
+                         </div>
+                         <button type="submit" class="btn btn-primary mt-2">بحث</button>
+                     </form>
+                 </div>
+                 <div id="search-results" class="mt-2"></div>
+            </div>
+            
+            <!-- Reports Page (Admin/Supervisor) -->
+            <div id="page-reports" class="page">
+                <div class="page-header"><h1>التقارير</h1></div>
+                <div class="tabs">
+                    <button class="tab-link active" onclick="openTab(event, 'tab-financial-reports')">تقارير مالية</button>
+                    <button class="tab-link" onclick="openTab(event, 'tab-statistical-reports')">تقارير إحصائية</button>
+                </div>
+                <div id="tab-financial-reports" class="tab-content active">
+                    <div class="card">
+                        <div class="card-header"><h3>التقرير المالي العام (شهري)</h3></div>
+                        <div style="overflow-x:auto;"><table id="financial-report-general"></table></div>
+                    </div>
+                    <div class="card">
+                        <div class="card-header">
+                            <h3>التقرير المالي التفصيلي (حسب الفرع)</h3>
+                             <div class="form-group" style="flex-direction: row; align-items: center; gap: 10px;">
+                                 <label for="financial-report-branch-select">اختر الفرع</label>
+                                 <select id="financial-report-branch-select"></select>
+                             </div>
+                        </div>
+                        <div style="overflow-x:auto;"><table id="financial-report-detailed"></table></div>
+                    </div>
+                </div>
+                 <div id="tab-statistical-reports" class="tab-content">
+                    <div class="card">
+                        <div class="card-header"><h3>إحصائيات عامة</h3></div>
+                         <div class="dashboard-grid">
+                            <div class="stat-card"><h4 >إجمالي السندات</h4><div id="stats-total-receipts" class="stat-number">0</div></div>
+                            <div class="stat-card"><h4 >إجمالي الإيرادات</h4><div id="stats-total-revenue" class="stat-number">0</div></div>
+                            <div class="stat-card"><h4 >عدد المحصلين النشطين</h4><div id="stats-active-collectors" class="stat-number">0</div></div>
+                            <div class="stat-card"><h4 >الفرع الأعلى إيراداً</h4><div id="stats-top-branch" class="stat-number">-</div></div>
+                         </div>
+                    </div>
+                    <div class="card">
+                         <div class="card-header"><h3>إحصائيات حركة السير</h3></div>
+                         <div id="stats-route-traffic">سيتم عرض تحليل حركة السير هنا...</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Issue Receipt Page (Collector) -->
+            <div id="page-issue-receipt" class="page">
+                <div class="page-header">
+                    <h1>قطع سند رسوم</h1>
+                    <p id="issue-receipt-location" style="color: #555; font-size: 1rem;"></p>
+                </div>
+                <div class="card">
+                    <form id="issue-receipt-form">
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label for="receipt-select">اختر نوع السند</label>
+                                <select id="receipt-select" required></select>
+                            </div>
+                            <div class="form-group hidden" id="variable-amount-group">
+                                <label for="receipt-variable-amount">المبلغ</label>
+                                <input type="number" id="receipt-variable-amount" min="0">
+                            </div>
+                             <div class="form-group hidden" id="variable-statement-group">
+                                <label for="receipt-variable-statement">البيان / المخالفة</label>
+                                <input type="text" id="receipt-variable-statement">
+                            </div>
+                            <div class="form-group">
+                                <label for="receipt-vehicle-plate">رقم المركبة</label>
+                                <input type="text" id="receipt-vehicle-plate" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="receipt-vehicle-type">نوع المركبة</label>
+                                <input type="text" id="receipt-vehicle-type" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="receipt-driver-name">اسم السائق</label>
+                                <input type="text" id="receipt-driver-name" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="receipt-driver-phone">رقم الهاتف (اختياري)</label>
+                                <input type="tel" id="receipt-driver-phone">
+                            </div>
+                             <div class="form-group">
+                                <label for="receipt-route-from">خط السير (من)</label>
+                                <input type="text" id="receipt-route-from" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="receipt-route-to">خط السير (إلى)</label>
+                                <input type="text" id="receipt-route-to" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="receipt-license-status">ترخيص الحافلة</label>
+                                <select id="receipt-license-status" required>
+                                    <option value="licensed">مرخص</option>
+                                    <option value="unlicensed">غير مرخص</option>
+                                </select>
+                            </div>
+                        </div>
+                        <button type="submit" class="btn btn-secondary mt-2">تسجيل وطباعة السند</button>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Collector's Daily Activity -->
+            <div id="page-my-activity" class="page">
+                 <div class="page-header"><h1>نشاطي اليومي</h1></div>
+                 <div class="card">
+                     <div class="card-header"><h3>السندات التي تم قطعها اليوم</h3></div>
+                     <div style="overflow-x:auto;">
+                         <table id="my-activity-table">
+                             <thead><tr><th>الوقت</th><th>رقم السند</th><th>نوع السند</th><th>المبلغ</th><th>رقم المركبة</th><th>الحالة</th></tr></thead>
+                             <tbody></tbody>
+                         </table>
+                     </div>
+                 </div>
+            </div>
+
+
+        </main>
+
+        <!-- Footer -->
+        <footer class="main-footer">
+            <span>&copy; 2024 - الهيئة العامة لتنظيم شؤون النقل البري</span>
+            <div id="sync-status">
+                <span id="sync-text">غير متصل</span>
+                <div id="sync-indicator" class="status-indicator"></div>
+                <div id="unsynced-count-container">
+                    | العمليات غير المرحلة: <strong id="unsynced-count">0</strong>
+                    <button id="manual-sync-btn" class="btn btn-primary" style="padding: 2px 8px; font-size: 0.8rem; margin-right: 10px;">مزامنة الآن</button>
+                </div>
+            </div>
+        </footer>
+    </div>
+    
+    <!-- Modals -->
+    <div id="confirm-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title" id="confirm-modal-title">تأكيد الإجراء</h3>
+                <span class="close-modal">&times;</span>
+            </div>
+            <p id="confirm-modal-body">هل أنت متأكد من أنك تريد المتابعة؟</p>
+            <div class="modal-footer" style="text-align: left; margin-top: 1.5rem;">
+                <button id="confirm-modal-yes" class="btn btn-danger">نعم</button>
+                <button id="confirm-modal-no" class="btn btn-light">لا</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="receipt-modal" class="modal">
+        <div class="modal-content">
+            <div id="receipt-to-print">
+                <div class="receipt-body">
+                    <div class="receipt-header">
+                        <h3>الهيئة العامة لتنظيم شؤون النقل البري</h3>
+                        <p>الجمهورية اليمنية</p>
+                        <h4 id="receipt-print-title">سند تحصيل رسوم</h4>
+                    </div>
+                    <div class="receipt-info">
+                        <table>
+                            <tr>
+                                <td><strong>الفرع:</strong> <span id="receipt-print-branch"></span></td>
+                                <td><strong>النقطة:</strong> <span id="receipt-print-point"></span></td>
+                            </tr>
+                            <tr>
+                                <td><strong>تاريخ/وقت:</strong> <span id="receipt-print-datetime"></span></td>
+                                <td><strong>رقم السند:</strong> <span id="receipt-print-id"></span></td>
+                            </tr>
+                            <tr>
+                                <td colspan="2"><strong>المحصل:</strong> <span id="receipt-print-collector"></span></td>
+                            </tr>
+                        </table>
+                    </div>
+                    <div class="receipt-details">
+                         <table>
+                            <tr><th>البيان</th><th>القيمة</th></tr>
+                            <tr><td><strong>رقم المركبة:</strong> <span id="receipt-print-plate"></span></td><td rowspan="7" style="vertical-align: top; text-align: center;"><strong>المبلغ الإجمالي</strong><br><span id="receipt-print-amount" style="font-size: 2em; font-weight: bold;"></span><br><span>ريال يمني</span></td></tr>
+                            <tr><td><strong>نوع المركبة:</strong> <span id="receipt-print-type"></span></td></tr>
+                            <tr><td><strong>اسم السائق:</strong> <span id="receipt-print-driver"></span></td></tr>
+                            <tr><td><strong>خط السير:</strong> <span id="receipt-print-route"></span></td></tr>
+                            <tr><td><strong>حالة الترخيص:</strong> <span id="receipt-print-license"></span></td></tr>
+                            <tr><td><strong>نوع الرسم:</strong> <span id="receipt-print-receipt-name"></span></td></tr>
+                            <tr><td><strong>بيان إضافي:</strong> <span id="receipt-print-statement"></span></td></tr>
+                        </table>
+                    </div>
+                    <div class="receipt-footer">
+                        <span>توقيع المحصل</span>
+                        <span>ختم النقطة</span>
+                    </div>
+                </div>
+            </div>
+             <div class="modal-footer" style="text-align: left; margin-top: 1.5rem;">
+                <button id="print-receipt-btn" class="btn btn-secondary"><i class="fas fa-print"></i> طباعة</button>
+                <button class="btn btn-light close-modal">إغلاق</button>
+            </div>
+        </div>
+    </div>
+
+
+<script>
+// ===================================================================================
+// ============================= START OF JAVASCRIPT CODE ============================
+// ===================================================================================
+document.addEventListener('DOMContentLoaded', () => {
+
+    // --- Global Variables & State ---
+    const DB_NAME = 'YemenTransportDB';
+    const DB_VERSION = 1;
+    let db;
+    let currentUser = null;
+    let confirmCallback = null;
+
+    // --- DOM Elements ---
+    const loginContainer = document.getElementById('login-container');
+    const appContainer = document.getElementById('app-container');
+    const loginForm = document.getElementById('login-form');
+    const loginError = document.getElementById('login-error');
+    const sidebarNav = document.getElementById('sidebar-nav');
+    const welcomeUser = document.getElementById('welcome-user');
+    const logoutBtn = document.getElementById('logout-btn');
+    const pageTitleHeader = document.getElementById('page-title-header');
+    
+    // Modals
+    const confirmModal = document.getElementById('confirm-modal');
+    const receiptModal = document.getElementById('receipt-modal');
+    
+    // --- IndexedDB Initialization & Helpers ---
+    function initDB() {
+        return new Promise((resolve, reject) => {
+            const request = indexedDB.open(DB_NAME, DB_VERSION);
+
+            request.onerror = (event) => {
+                console.error("Database error:", event.target.errorCode);
+                reject("Database error");
+            };
+
+            request.onupgradeneeded = (event) => {
+                db = event.target.result;
+                // --- Create Object Stores (Tables) ---
+                if (!db.objectStoreNames.contains('users')) {
+                    const usersStore = db.createObjectStore('users', { keyPath: 'id', autoIncrement: true });
+                    usersStore.createIndex('username', 'username', { unique: true });
+                }
+                if (!db.objectStoreNames.contains('branches')) {
+                    db.createObjectStore('branches', { keyPath: 'id', autoIncrement: true });
+                }
+                if (!db.objectStoreNames.contains('points')) {
+                    const pointsStore = db.createObjectStore('points', { keyPath: 'id', autoIncrement: true });
+                    pointsStore.createIndex('branchId', 'branchId', { unique: false });
+                }
+                if (!db.objectStoreNames.contains('receiptTypes')) {
+                    db.createObjectStore('receiptTypes', { keyPath: 'id', autoIncrement: true });
+                }
+                if (!db.objectStoreNames.contains('transactions')) {
+                    const transStore = db.createObjectStore('transactions', { keyPath: 'id', autoIncrement: true });
+                    transStore.createIndex('timestamp', 'timestamp', { unique: false });
+                    transStore.createIndex('userId', 'userId', { unique: false });
+                    transStore.createIndex('synced', 'synced', { unique: false });
+                }
+                 if (!db.objectStoreNames.contains('auditLog')) {
+                    const auditStore = db.createObjectStore('auditLog', { keyPath: 'id', autoIncrement: true });
+                    auditStore.createIndex('timestamp', 'timestamp', { unique: false });
+                }
+            };
+
+            request.onsuccess = (event) => {
+                db = event.target.result;
+                console.log("Database opened successfully.");
+                seedInitialData().then(resolve);
+            };
+        });
+    }
+
+    async function seedInitialData() {
+        const transaction = db.transaction(['users'], 'readonly');
+        const store = transaction.objectStore('users');
+        const countRequest = store.count();
+        
+        return new Promise(resolve => {
+            countRequest.onsuccess = () => {
+                if (countRequest.result === 0) {
+                    console.log("Seeding initial admin user...");
+                    const addTransaction = db.transaction(['users'], 'readwrite');
+                    const addStore = addTransaction.objectStore('users');
+                    addStore.add({
+                        username: 'admin',
+                        password: '123', // In a real app, this should be hashed.
+                        role: 'admin',
+                        branchId: null,
+                        pointId: null,
+                        status: 'active',
+                        reasonForStop: ''
+                    });
+                    addTransaction.oncomplete = () => {
+                        logAction('System', 'تم إنشاء المستخدم الافتراضي (admin)');
+                        resolve();
+                    }
+                } else {
+                    resolve();
+                }
+            };
+        });
+    }
+
+    // Generic DB helper functions
+    const dbAction = (storeName, mode, action) => {
+        return new Promise((resolve, reject) => {
+            if (!db) {
+                reject("Database not initialized.");
+                return;
+            }
+            const transaction = db.transaction(storeName, mode);
+            const store = transaction.objectStore(storeName);
+            action(store, resolve, reject);
+            transaction.onerror = (event) => reject(event.target.error);
+        });
+    };
+    
+    const addData = (storeName, data) => dbAction(storeName, 'readwrite', (store, resolve) => store.add(data).onsuccess = (e) => resolve(e.target.result));
+    const getAllData = (storeName) => dbAction(storeName, 'readonly', (store, resolve) => store.getAll().onsuccess = (e) => resolve(e.target.result));
+    const getData = (storeName, key) => dbAction(storeName, 'readonly', (store, resolve) => store.get(key).onsuccess = (e) => resolve(e.target.result));
+    const updateData = (storeName, data) => dbAction(storeName, 'readwrite', (store, resolve) => store.put(data).onsuccess = (e) => resolve(e.target.result));
+    const deleteData = (storeName, key) => dbAction(storeName, 'readwrite', (store, resolve) => store.delete(key).onsuccess = () => resolve());
+    const clearStore = (storeName) => dbAction(storeName, 'readwrite', (store, resolve) => store.clear().onsuccess = () => resolve());
+    const getDataByIndex = (storeName, indexName, value) => dbAction(storeName, 'readonly', (store, resolve) => {
+        const index = store.index(indexName);
+        index.getAll(value).onsuccess = (e) => resolve(e.target.result);
+    });
+
+    // --- Authentication ---
+    async function handleLogin(e) {
+        e.preventDefault();
+        const username = document.getElementById('username').value.trim();
+        const password = document.getElementById('password').value;
+        loginError.textContent = '';
+
+        if (!username || !password) {
+            loginError.textContent = 'الرجاء إدخال اسم المستخدم وكلمة المرور.';
+            return;
+        }
+
+        const users = await getAllData('users');
+        const user = users.find(u => u.username.toLowerCase() === username.toLowerCase());
+
+        if (user) {
+            if (user.status === 'inactive') {
+                loginError.textContent = `الحساب متوقف. ${user.reasonForStop || 'يرجى مراجعة الإدارة.'}`;
+                return;
+            }
+            if (user.password === password) { // Plain text comparison for demo
+                currentUser = user;
+                sessionStorage.setItem('currentUser', JSON.stringify(user));
+                loginSuccess();
+            } else {
+                loginError.textContent = 'كلمة المرور غير صحيحة.';
+            }
+        } else {
+            loginError.textContent = 'اسم المستخدم غير موجود.';
+        }
+    }
+
+    function loginSuccess() {
+        loginContainer.style.display = 'none';
+        appContainer.style.display = 'grid';
+        welcomeUser.textContent = `مرحباً، ${currentUser.username}`;
+        logAction(currentUser.username, 'تم تسجيل الدخول بنجاح');
+        updateUserLastLogin(currentUser.id);
+        setupUIForRole();
+    }
+
+    function handleLogout() {
+        logAction(currentUser.username, 'تم تسجيل الخروج');
+        currentUser = null;
+        sessionStorage.removeItem('currentUser');
+        loginContainer.style.display = 'flex';
+        appContainer.style.display = 'none';
+        loginForm.reset();
+        loginError.textContent = '';
+    }
+    
+    function checkSession() {
+        const storedUser = sessionStorage.getItem('currentUser');
+        if (storedUser) {
+            currentUser = JSON.parse(storedUser);
+            loginSuccess();
+        }
+    }
+    
+    async function updateUserLastLogin(userId) {
+        const user = await getData('users', userId);
+        if (user) {
+            user.lastLogin = new Date().toISOString();
+            await updateData('users', user);
+        }
+    }
+
+    // --- UI Setup & Navigation ---
+    function setupUIForRole() {
+        buildSidebarNav();
+        // Initially show the home page for the role
+        showPage('home');
+
+        // Hide/show elements based on role
+        const isAdmin = currentUser.role === 'admin';
+        const isCollector = currentUser.role === 'collector';
+        const isSupervisor = currentUser.role === 'supervisor';
+        
+        document.getElementById('admin-dashboard-content').style.display = isAdmin ? 'block' : 'none';
+        document.getElementById('collector-dashboard-content').style.display = isCollector ? 'block' : 'none';
+        document.getElementById('supervisor-dashboard-content').style.display = isSupervisor ? 'block' : 'none';
+
+        if (isCollector) {
+            loadCollectorHeader();
+        }
+    }
+    
+    async function loadCollectorHeader() {
+        if (currentUser.branchId && currentUser.pointId) {
+            const branch = await getData('branches', currentUser.branchId);
+            const point = await getData('points', currentUser.pointId);
+            const locationText = `الفرع: ${branch.name} / النقطة: ${point.name}`;
+            document.getElementById('collector-location-header').textContent = locationText;
+            document.getElementById('issue-receipt-location').textContent = locationText;
+        }
+    }
+
+    function buildSidebarNav() {
+        sidebarNav.innerHTML = '';
+        const navItems = {
+            admin: [
+                { id: 'home', icon: 'fa-home', text: 'الرئيسية' },
+                { id: 'system-setup', icon: 'fa-cogs', text: 'تهيئة النظام' },
+                { id: 'activity-monitoring', icon: 'fa-chart-line', text: 'متابعة النشاط' },
+                { id: 'audit-log', icon: 'fa-history', text: 'سجل العمليات' },
+                { id: 'search', icon: 'fa-search', text: 'البحث' },
+                { id: 'reports', icon: 'fa-file-invoice-dollar', text: 'التقارير' }
+            ],
+            supervisor: [
+                { id: 'home', icon: 'fa-home', text: 'الرئيسية' },
+                { id: 'activity-monitoring', icon: 'fa-chart-line', text: 'متابعة النشاط' },
+                { id: 'reports', icon: 'fa-file-invoice-dollar', text: 'التقارير' }
+            ],
+            collector: [
+                { id: 'home', icon: 'fa-home', text: 'الرئيسية' },
+                { id: 'issue-receipt', icon: 'fa-receipt', text: 'قطع سند' },
+                { id: 'my-activity', icon: 'fa-tasks', text: 'نشاطي اليومي' },
+            ]
+        };
+
+        const userNav = navItems[currentUser.role];
+        userNav.forEach(item => {
+            const li = document.createElement('li');
+            li.innerHTML = `<a href="#" data-page="${item.id}" class="nav-link">
+                                <i class="fas ${item.icon}"></i>
+                                <span class="nav-text">${item.text}</span>
+                            </a>`;
+            sidebarNav.appendChild(li);
+        });
+    }
+
+    function showPage(pageId) {
+        document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+        document.getElementById(`page-${pageId}`).classList.add('active');
+
+        document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
+        const activeLink = document.querySelector(`.nav-link[data-page="${pageId}"]`);
+        if (activeLink) {
+            activeLink.classList.add('active');
+            pageTitleHeader.textContent = activeLink.querySelector('.nav-text')?.textContent || 'الرئيسية';
+        }
+
+        // Load data for the shown page
+        switch (pageId) {
+            case 'system-setup':
+                loadSystemSetupPage();
+                break;
+            case 'issue-receipt':
+                loadIssueReceiptPage();
+                break;
+            case 'activity-monitoring':
+                loadActivityMonitoringPage();
+                break;
+            case 'audit-log':
+                loadAuditLogPage();
+                break;
+            case 'my-activity':
+                loadMyActivityPage();
+                break;
+            case 'reports':
+                loadReportsPage();
+                break;
+             case 'search':
+                loadSearchPage();
+                break;
+        }
+    }
+    
+    // Function to handle tab switching
+    window.openTab = (evt, tabName) => {
+        let i, tabcontent, tablinks;
+        const parent = evt.target.closest('.page');
+        tabcontent = parent.getElementsByClassName("tab-content");
+        for (i = 0; i < tabcontent.length; i++) {
+            tabcontent[i].style.display = "none";
+        }
+        tablinks = parent.getElementsByClassName("tab-link");
+        for (i = 0; i < tablinks.length; i++) {
+            tablinks[i].className = tablinks[i].className.replace(" active", "");
+        }
+        document.getElementById(tabName).style.display = "block";
+        evt.currentTarget.className += " active";
+    }
+
+    // --- System Setup Page Logic ---
+    async function loadSystemSetupPage() {
+        // Reset forms and load all data for all tabs
+        document.getElementById('user-form').reset();
+        document.getElementById('branch-form').reset();
+        document.getElementById('point-form').reset();
+        document.getElementById('receipt-type-form').reset();
+        cancelUserEdit(); 
+        cancelReceiptTypeEdit();
+        
+        loadUsers();
+        loadBranchesAndPoints();
+        loadReceiptTypes();
+    }
+    
+    // User Management
+    const userForm = document.getElementById('user-form');
+    const userRoleSelect = document.getElementById('user-role');
+    const userPermissionsGroup = document.getElementById('user-permissions-group');
+    const userBranchSelect = document.getElementById('user-branch');
+    const userPointSelect = document.getElementById('user-point');
+    const userStatusSelect = document.getElementById('user-status');
+    const userReasonGroup = document.getElementById('user-reason-group');
+
+    userRoleSelect.addEventListener('change', () => {
+        if (['supervisor', 'collector'].includes(userRoleSelect.value)) {
+            userPermissionsGroup.classList.remove('hidden');
+            populateBranchSelect(userBranchSelect);
+        } else {
+            userPermissionsGroup.classList.add('hidden');
+        }
+    });
+
+    userBranchSelect.addEventListener('change', () => {
+        populatePointSelect(userPointSelect, userBranchSelect.value);
+    });
+    
+    userStatusSelect.addEventListener('change', () => {
+        userReasonGroup.classList.toggle('hidden', userStatusSelect.value !== 'inactive');
+    });
+
+    userForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const id = document.getElementById('user-id').value;
+        const userData = {
+            username: document.getElementById('user-username').value,
+            password: document.getElementById('user-password').value,
+            role: userRoleSelect.value,
+            status: userStatusSelect.value,
+            reasonForStop: document.getElementById('user-reason').value,
+            branchId: ['supervisor', 'collector'].includes(userRoleSelect.value) ? parseInt(userBranchSelect.value) : null,
+            pointId: ['supervisor', 'collector'].includes(userRoleSelect.value) ? (userPointSelect.value === 'all' ? 'all' : parseInt(userPointSelect.value)) : null
+        };
+
+        try {
+            if (id) { // Editing existing user
+                const existingUser = await getData('users', parseInt(id));
+                if (!userData.password) { // Don't change password if field is empty
+                    userData.password = existingUser.password;
+                }
+                await updateData('users', { ...existingUser, ...userData, id: parseInt(id) });
+                logAction(currentUser.username, `تعديل المستخدم: ${userData.username}`);
+            } else { // Adding new user
+                if (!userData.password) { alert('كلمة المرور مطلوبة للمستخدم الجديد.'); return; }
+                await addData('users', userData);
+                logAction(currentUser.username, `إضافة مستخدم جديد: ${userData.username}`);
+            }
+            userForm.reset();
+            cancelUserEdit();
+            loadUsers();
+        } catch (error) {
+            console.error(error);
+            if (error.name === 'ConstraintError') {
+                alert('اسم المستخدم موجود بالفعل. الرجاء اختيار اسم آخر.');
+            }
+        }
+    });
+
+    async function loadUsers() {
+        const usersTableBody = document.querySelector('#users-table tbody');
+        usersTableBody.innerHTML = '';
+        const users = await getAllData('users');
+        const branches = await getAllData('branches');
+        const points = await getAllData('points');
+        
+        const branchesMap = new Map(branches.map(b => [b.id, b.name]));
+        const pointsMap = new Map(points.map(p => [p.id, p.name]));
+
+        users.forEach(user => {
+            let permissions = 'N/A';
+            if (user.branchId) {
+                permissions = `فرع: ${branchesMap.get(user.branchId) || 'غير معروف'}`;
+                if (user.pointId) {
+                    permissions += ` / نقطة: ${user.pointId === 'all' ? 'الكل' : (pointsMap.get(user.pointId) || 'غير معروف')}`;
+                }
+            }
+            
+            const tr = document.createElement('tr');
+            tr.innerHTML = `
+                <td>${user.username}</td>
+                <td>${translateRole(user.role)}</td>
+                <td>${permissions}</td>
+                <td><span style="color: ${user.status === 'active' ? 'green' : 'red'}; font-weight: bold;">${user.status === 'active' ? 'نشط' : 'متوقف'}</span></td>
+                <td class="action-btns">
+                    <button class="btn btn-primary" onclick="window.app.editUser(${user.id})">تعديل</button>
+                    <button class="btn btn-danger" onclick="window.app.deleteUser(${user.id}, '${user.username}')">حذف</button>
+                </td>
+            `;
+            usersTableBody.appendChild(tr);
+        });
+    }
+
+    window.app = window.app || {}; // Expose functions to global scope for onclick
+    window.app.editUser = async (id) => {
+        const user = await getData('users', id);
+        document.getElementById('user-id').value = user.id;
+        document.getElementById('user-username').value = user.username;
+        document.getElementById('user-password').value = '';
+        userRoleSelect.value = user.role;
+        userStatusSelect.value = user.status;
+        document.getElementById('user-reason').value = user.reasonForStop || '';
+        
+        userStatusSelect.dispatchEvent(new Event('change'));
+
+        if (['supervisor', 'collector'].includes(user.role)) {
+            userPermissionsGroup.classList.remove('hidden');
+            await populateBranchSelect(userBranchSelect);
+            userBranchSelect.value = user.branchId;
+            await populatePointSelect(userPointSelect, user.branchId, user.role === 'supervisor');
+            userPointSelect.value = user.pointId;
+        } else {
+            userPermissionsGroup.classList.add('hidden');
+        }
+
+        document.getElementById('cancel-user-edit').classList.remove('hidden');
+        userForm.scrollIntoView({ behavior: 'smooth' });
+    };
+
+    window.app.deleteUser = (id, username) => {
+        if(id === currentUser.id) {
+            alert('لا يمكنك حذف حسابك الحالي.');
+            return;
+        }
+        openConfirmModal(`هل أنت متأكد من حذف المستخدم "${username}"؟`, async () => {
+            await deleteData('users', id);
+            logAction(currentUser.username, `حذف المستخدم: ${username}`);
+            loadUsers();
+        });
+    };
+    
+    function cancelUserEdit() {
+        userForm.reset();
+        document.getElementById('user-id').value = '';
+        document.getElementById('cancel-user-edit').classList.add('hidden');
+        userPermissionsGroup.classList.add('hidden');
+        userReasonGroup.classList.add('hidden');
+    }
+    document.getElementById('cancel-user-edit').addEventListener('click', cancelUserEdit);
+
+
+    // Branch/Point Management
+    const branchForm = document.getElementById('branch-form');
+    const pointForm = document.getElementById('point-form');
+
+    branchForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const branchName = document.getElementById('branch-name').value.trim();
+        if (branchName) {
+            await addData('branches', { name: branchName });
+            logAction(currentUser.username, `إضافة فرع جديد: ${branchName}`);
+            branchForm.reset();
+            loadBranchesAndPoints();
+        }
+    });
+
+    pointForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const pointName = document.getElementById('point-name').value.trim();
+        const branchId = parseInt(document.getElementById('point-branch-select').value);
+        if (pointName && branchId) {
+            await addData('points', { name: pointName, branchId: branchId });
+            const branch = await getData('branches', branchId);
+            logAction(currentUser.username, `إضافة نقطة جديدة (${pointName}) إلى فرع (${branch.name})`);
+            pointForm.reset();
+            loadBranchesAndPoints();
+        }
+    });
+
+    async function loadBranchesAndPoints() {
+        const branches = await getAllData('branches');
+        const points = await getAllData('points');
+        
+        const branchesList = document.getElementById('branches-list');
+        branchesList.innerHTML = '';
+        const pointBranchSelect = document.getElementById('point-branch-select');
+        pointBranchSelect.innerHTML = '<option value="">-- اختر فرع --</option>';
+
+        branches.forEach(branch => {
+            const branchPoints = points.filter(p => p.branchId === branch.id);
+            const li = document.createElement('li');
+            li.className = 'list-group-item';
+            li.innerHTML = `<strong>${branch.name}</strong> 
+                <button class="btn btn-danger btn-sm float-left" onclick="window.app.deleteBranch(${branch.id})">حذف</button>
+                <ul>${branchPoints.map(p => `<li>${p.name} <button class="btn btn-danger btn-sm" onclick="window.app.deletePoint(${p.id})">x</button></li>`).join('')}</ul>`;
+            branchesList.appendChild(li);
+
+            const option = document.createElement('option');
+            option.value = branch.id;
+            option.textContent = branch.name;
+            pointBranchSelect.appendChild(option);
+        });
+    }
+
+    window.app.deleteBranch = (id) => {
+        openConfirmModal('سيتم حذف الفرع وكل النقاط التابعة له. هل أنت متأكد؟', async () => {
+            const branch = await getData('branches', id);
+            const pointsToDelete = await getDataByIndex('points', 'branchId', id);
+            for (const point of pointsToDelete) {
+                await deleteData('points', point.id);
+            }
+            await deleteData('branches', id);
+            logAction(currentUser.username, `حذف فرع (${branch.name}) وكل نقاطه`);
+            loadBranchesAndPoints();
+        });
+    };
+    
+    window.app.deletePoint = (id) => {
+        openConfirmModal('هل أنت متأكد من حذف هذه النقطة؟', async () => {
+            const point = await getData('points', id);
+            await deleteData('points', id);
+            logAction(currentUser.username, `حذف نقطة (${point.name})`);
+            loadBranchesAndPoints();
+        });
+    }
+
+    // Receipt Type Management
+    const receiptTypeForm = document.getElementById('receipt-type-form');
+    const receiptTypeAmountType = document.getElementById('receipt-type-amount-type');
+    const receiptTypeAmountGroup = document.getElementById('receipt-type-amount-group');
+    
+    receiptTypeAmountType.addEventListener('change', () => {
+        receiptTypeAmountGroup.style.display = receiptTypeAmountType.value === 'fixed' ? 'block' : 'none';
+    });
+
+    receiptTypeForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const id = document.getElementById('receipt-type-id').value;
+        const typeData = {
+            name: document.getElementById('receipt-type-name').value,
+            type: receiptTypeAmountType.value,
+            amount: receiptTypeAmountType.value === 'fixed' ? parseFloat(document.getElementById('receipt-type-amount').value) : null
+        };
+        
+        if (id) {
+            await updateData('receiptTypes', { ...typeData, id: parseInt(id) });
+            logAction(currentUser.username, `تعديل سند: ${typeData.name}`);
+        } else {
+            await addData('receiptTypes', typeData);
+            logAction(currentUser.username, `إضافة سند جديد: ${typeData.name}`);
+        }
+        receiptTypeForm.reset();
+        cancelReceiptTypeEdit();
+        loadReceiptTypes();
+    });
+
+    async function loadReceiptTypes() {
+        const tableBody = document.querySelector('#receipt-types-table tbody');
+        tableBody.innerHTML = '';
+        const types = await getAllData('receiptTypes');
+        types.forEach(type => {
+            const tr = document.createElement('tr');
+            tr.innerHTML = `
+                <td>${type.name}</td>
+                <td>${type.type === 'fixed' ? 'ثابت' : 'متغير'}</td>
+                <td>${type.amount !== null ? formatCurrency(type.amount) : 'N/A'}</td>
+                <td class="action-btns">
+                    <button class="btn btn-primary" onclick="window.app.editReceiptType(${type.id})">تعديل</button>
+                    <button class="btn btn-danger" onclick="window.app.deleteReceiptType(${type.id})">حذف</button>
+                </td>
+            `;
+            tableBody.appendChild(tr);
+        });
+    }
+    
+    window.app.editReceiptType = async (id) => {
+        const type = await getData('receiptTypes', id);
+        document.getElementById('receipt-type-id').value = type.id;
+        document.getElementById('receipt-type-name').value = type.name;
+        receiptTypeAmountType.value = type.type;
+        document.getElementById('receipt-type-amount').value = type.amount;
+        receiptTypeAmountType.dispatchEvent(new Event('change'));
+        document.getElementById('cancel-receipt-type-edit').classList.remove('hidden');
+        receiptTypeForm.scrollIntoView({behavior: 'smooth'});
+    };
+
+    window.app.deleteReceiptType = (id) => {
+        openConfirmModal('هل أنت متأكد من حذف نوع السند هذا؟', async () => {
+            const type = await getData('receiptTypes', id);
+            await deleteData('receiptTypes', id);
+            logAction(currentUser.username, `حذف سند: ${type.name}`);
+            loadReceiptTypes();
+        });
+    };
+    
+    function cancelReceiptTypeEdit() {
+        receiptTypeForm.reset();
+        document.getElementById('receipt-type-id').value = '';
+        document.getElementById('cancel-receipt-type-edit').classList.add('hidden');
+        receiptTypeAmountGroup.style.display = 'block';
+    }
+    document.getElementById('cancel-receipt-type-edit').addEventListener('click', cancelReceiptTypeEdit);
+
+    
+    // --- Issue Receipt Page (Collector) ---
+    const issueReceiptForm = document.getElementById('issue-receipt-form');
+    const receiptSelect = document.getElementById('receipt-select');
+    const variableAmountGroup = document.getElementById('variable-amount-group');
+    const variableStatementGroup = document.getElementById('variable-statement-group');
+
+    async function loadIssueReceiptPage() {
+        issueReceiptForm.reset();
+        variableAmountGroup.classList.add('hidden');
+        variableStatementGroup.classList.add('hidden');
+
+        const receiptTypes = await getAllData('receiptTypes');
+        receiptSelect.innerHTML = '<option value="">-- اختر نوع السند --</option>';
+        receiptTypes.forEach(type => {
+            const amountText = type.type === 'fixed' ? `(${formatCurrency(type.amount)})` : '(متغير)';
+            const option = document.createElement('option');
+            option.value = type.id;
+            option.textContent = `${type.name} ${amountText}`;
+            option.dataset.type = type.type;
+            option.dataset.amount = type.amount;
+            receiptSelect.appendChild(option);
+        });
+    }
+    
+    receiptSelect.addEventListener('change', (e) => {
+        const selectedOption = e.target.options[e.target.selectedIndex];
+        const type = selectedOption.dataset.type;
+        variableAmountGroup.classList.toggle('hidden', type !== 'variable');
+        variableStatementGroup.classList.toggle('hidden', type !== 'variable');
+    });
+
+    issueReceiptForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        
+        const selectedOption = receiptSelect.options[receiptSelect.selectedIndex];
+        const receiptTypeId = parseInt(selectedOption.value);
+        if (!receiptTypeId) { alert('الرجاء اختيار نوع السند.'); return; }
+        
+        const type = selectedOption.dataset.type;
+        let amount = type === 'fixed' ? parseFloat(selectedOption.dataset.amount) : parseFloat(document.getElementById('receipt-variable-amount').value);
+        if (isNaN(amount) || amount <= 0) { alert('الرجاء إدخال مبلغ صحيح.'); return; }
+        
+        const transactionData = {
+            receiptTypeId: receiptTypeId,
+            amount: amount,
+            statement: type === 'variable' ? document.getElementById('receipt-variable-statement').value : '',
+            vehiclePlate: document.getElementById('receipt-vehicle-plate').value,
+            vehicleType: document.getElementById('receipt-vehicle-type').value,
+            driverName: document.getElementById('receipt-driver-name').value,
+            driverPhone: document.getElementById('receipt-driver-phone').value,
+            routeFrom: document.getElementById('receipt-route-from').value,
+            routeTo: document.getElementById('receipt-route-to').value,
+            licenseStatus: document.getElementById('receipt-license-status').value,
+            timestamp: new Date().toISOString(),
+            userId: currentUser.id,
+            branchId: currentUser.branchId,
+            pointId: currentUser.pointId,
+            synced: false // Always save as unsynced first
+        };
+        
+        const newTransactionId = await addData('transactions', transactionData);
+        logAction(currentUser.username, `قطع سند جديد برقم ${newTransactionId} بقيمة ${formatCurrency(amount)}`);
+        
+        await updateUserLastReceipt(currentUser.id, transactionData.timestamp);
+        
+        issueReceiptForm.reset();
+        variableAmountGroup.classList.add('hidden');
+        variableStatementGroup.classList.add('hidden');
+
+        updateUnsyncedCount();
+        checkOnlineStatus(); // Trigger a sync check
+        
+        alert('تم تسجيل السند بنجاح!');
+        showPrintableReceipt(newTransactionId);
+    });
+    
+    async function updateUserLastReceipt(userId, timestamp) {
+        const user = await getData('users', userId);
+        if(user) {
+            user.lastReceiptDate = timestamp;
+            await updateData('users', user);
+        }
+    }
+
+    async function showPrintableReceipt(transactionId) {
+        const transaction = await getData('transactions', transactionId);
+        if (!transaction) return;
+
+        const [receiptType, user, branch, point] = await Promise.all([
+            getData('receiptTypes', transaction.receiptTypeId),
+            getData('users', transaction.userId),
+            getData('branches', transaction.branchId),
+            getData('points', transaction.pointId)
+        ]);
+
+        document.getElementById('receipt-print-title').textContent = receiptType.name;
+        document.getElementById('receipt-print-branch').textContent = branch?.name || 'غير معروف';
+        document.getElementById('receipt-print-point').textContent = point?.name || 'غير معروف';
+        document.getElementById('receipt-print-datetime').textContent = new Date(transaction.timestamp).toLocaleString('ar-EG');
+        document.getElementById('receipt-print-id').textContent = transaction.id.toString().padStart(8, '0');
+        document.getElementById('receipt-print-collector').textContent = user?.username || 'غير معروف';
+        
+        document.getElementById('receipt-print-plate').textContent = transaction.vehiclePlate;
+        document.getElementById('receipt-print-type').textContent = transaction.vehicleType;
+        document.getElementById('receipt-print-driver').textContent = transaction.driverName;
+        document.getElementById('receipt-print-route').textContent = `${transaction.routeFrom} - ${transaction.routeTo}`;
+        document.getElementById('receipt-print-license').textContent = transaction.licenseStatus === 'licensed' ? 'مرخص' : 'غير مرخص';
+        document.getElementById('receipt-print-receipt-name').textContent = receiptType.name;
+        document.getElementById('receipt-print-statement').textContent = transaction.statement || 'لا يوجد';
+        
+        document.getElementById('receipt-print-amount').textContent = formatCurrency(transaction.amount);
+
+        receiptModal.classList.add('show');
+    }
+    
+    document.getElementById('print-receipt-btn').addEventListener('click', () => {
+        window.print();
+    });
+
+    // --- My Activity Page (Collector) ---
+    async function loadMyActivityPage() {
+        const tableBody = document.querySelector('#my-activity-table tbody');
+        tableBody.innerHTML = `<tr><td colspan="6">جاري تحميل البيانات...</td></tr>`;
+
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+
+        const allTransactions = await getAllData('transactions');
+        const receiptTypesMap = new Map((await getAllData('receiptTypes')).map(rt => [rt.id, rt.name]));
+
+        const myTransactionsToday = allTransactions.filter(t => 
+            t.userId === currentUser.id && new Date(t.timestamp) >= today
+        ).sort((a,b) => new Date(b.timestamp) - new Date(a.timestamp));
+
+        if (myTransactionsToday.length === 0) {
+            tableBody.innerHTML = `<tr><td colspan="6">لا توجد سندات لهذا اليوم.</td></tr>`;
+            return;
+        }
+
+        tableBody.innerHTML = '';
+        myTransactionsToday.forEach(t => {
+            const tr = document.createElement('tr');
+            tr.innerHTML = `
+                <td>${new Date(t.timestamp).toLocaleTimeString('ar-EG')}</td>
+                <td>${t.id.toString().padStart(8, '0')}</td>
+                <td>${receiptTypesMap.get(t.receiptTypeId) || 'غير معروف'}</td>
+                <td>${formatCurrency(t.amount)}</td>
+                <td>${t.vehiclePlate}</td>
+                <td><span style="color: ${t.synced ? 'green' : 'orange'}">${t.synced ? 'تمت المزامنة' : 'قيد المزامنة'}</span></td>
+            `;
+            tableBody.appendChild(tr);
+        });
+    }
+
+    // --- Activity Monitoring Page ---
+    const activityFilterForm = document.getElementById('activity-filter-form');
+    
+    function loadActivityMonitoringPage() {
+        const activityBranchSelect = document.getElementById('activity-branch-select');
+        populateBranchSelect(activityBranchSelect, false, true); // Admin can see all
+        
+        // If supervisor, restrict the dropdown
+        if (currentUser.role === 'supervisor') {
+            Array.from(activityBranchSelect.options).forEach(opt => {
+                if (opt.value && parseInt(opt.value) !== currentUser.branchId) {
+                    opt.disabled = true;
+                }
+            });
+            activityBranchSelect.value = currentUser.branchId;
+            activityBranchSelect.disabled = true;
+        }
+
+        const today = new Date().toISOString().split('T')[0];
+        document.getElementById('activity-date-from').value = today;
+        document.getElementById('activity-date-to').value = today;
+        
+        document.querySelectorAll('input[name="activity_type"]').forEach(radio => {
+            radio.addEventListener('change', handleActivityTypeChange);
+        });
+        
+        handleActivityTypeChange();
+    }
+    
+    function handleActivityTypeChange() {
+        const selectedType = document.querySelector('input[name="activity_type"]:checked').value;
+        const branchFilterGroup = document.getElementById('activity-branch-filter-group');
+        branchFilterGroup.classList.toggle('hidden', !['branch', 'collectors'].includes(selectedType));
+    }
+    
+    activityFilterForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const resultsDiv = document.getElementById('activity-results');
+        resultsDiv.innerHTML = '<h4><i class="fas fa-spinner fa-spin"></i> جاري توليد التقرير...</h4>';
+
+        const fromDate = new Date(document.getElementById('activity-date-from').value);
+        fromDate.setHours(0, 0, 0, 0);
+        const toDate = new Date(document.getElementById('activity-date-to').value);
+        toDate.setHours(23, 59, 59, 999);
+        const type = document.querySelector('input[name="activity_type"]:checked').value;
+        const branchId = document.getElementById('activity-branch-select').value;
+        
+        const allData = await fetchAllDataForReports();
+        const transactions = allData.transactions.filter(t => {
+             const tDate = new Date(t.timestamp);
+             let match = tDate >= fromDate && tDate <= toDate;
+             
+             // Supervisor filter
+             if (currentUser.role === 'supervisor') {
+                 match = match && t.branchId === currentUser.branchId;
+             }
+             
+             return match;
+        });
+        
+        let html = '';
+        if (type === 'general') {
+            html = await generateGeneralActivityReport(transactions, allData);
+        } else if (type === 'branch' && branchId) {
+            html = await generateBranchDetailReport(transactions, parseInt(branchId), allData);
+        } else if (type === 'collectors' && branchId) {
+            html = await generateCollectorsActivityReport(transactions, parseInt(branchId), allData);
+        } else {
+             html = '<p class="text-danger">الرجاء تحديد فرع لعرض التفاصيل.</p>';
+        }
+        
+        resultsDiv.innerHTML = html;
+    });
+    
+    async function generateGeneralActivityReport(transactions, allData) {
+        const byBranch = {};
+        transactions.forEach(t => {
+            if (!byBranch[t.branchId]) {
+                byBranch[t.branchId] = { count: 0, total: 0 };
+            }
+            byBranch[t.branchId].count++;
+            byBranch[t.branchId].total += t.amount;
+        });
+
+        let table = `<div class="card"><div class="card-header"><h3>النشاط العام للفروع</h3></div>
+                     <table class="table"><thead><tr><th>اسم الفرع</th><th>عدد السندات</th><th>إجمالي المبلغ</th></tr></thead><tbody>`;
+        let totalCount = 0;
+        let totalAmount = 0;
+        for (const branchId in byBranch) {
+            const branchName = allData.branchesMap.get(parseInt(branchId)) || 'فرع غير معروف';
+            table += `<tr>
+                        <td>${branchName}</td>
+                        <td>${byBranch[branchId].count}</td>
+                        <td>${formatCurrency(byBranch[branchId].total)}</td>
+                      </tr>`;
+            totalCount += byBranch[branchId].count;
+            totalAmount += byBranch[branchId].total;
+        }
+        table += `<tr style="font-weight:bold; background-color: #e9ecef;">
+                    <td>الإجمالي العام</td>
+                    <td>${totalCount}</td>
+                    <td>${formatCurrency(totalAmount)}</td>
+                  </tr>`;
+        table += `</tbody></table></div>`;
+        return table;
+    }
+
+    async function generateBranchDetailReport(allTransactions, branchId, allData) {
+        const transactions = allTransactions.filter(t => t.branchId === branchId);
+        const branchName = allData.branchesMap.get(branchId);
+        let html = `<h2>تفاصيل فرع: ${branchName}</h2>`;
+
+        // 1. By Point
+        const byPoint = {};
+        transactions.forEach(t => {
+            if (!byPoint[t.pointId]) byPoint[t.pointId] = { count: 0, total: 0 };
+            byPoint[t.pointId].count++;
+            byPoint[t.pointId].total += t.amount;
+        });
+
+        html += `<div class="card"><div class="card-header"><h4>نشاط النقاط</h4></div>
+                 <table class="table"><thead><tr><th>اسم النقطة</th><th>عدد السندات</th><th>إجمالي المبلغ</th></tr></thead><tbody>`;
+        for (const pointId in byPoint) {
+            html += `<tr><td>${allData.pointsMap.get(parseInt(pointId)) || 'غير معروف'}</td><td>${byPoint[pointId].count}</td><td>${formatCurrency(byPoint[pointId].total)}</td></tr>`;
+        }
+        html += `</tbody></table></div>`;
+
+        // 2. By Receipt Type
+        const byReceiptType = {};
+        transactions.forEach(t => {
+            if (!byReceiptType[t.receiptTypeId]) byReceiptType[t.receiptTypeId] = { count: 0, total: 0 };
+            byReceiptType[t.receiptTypeId].count++;
+            byReceiptType[t.receiptTypeId].total += t.amount;
+        });
+        html += `<div class="card mt-2"><div class="card-header"><h4>أنواع السندات</h4></div>
+                 <table class="table"><thead><tr><th>نوع السند</th><th>عدد السندات</th><th>إجمالي المبلغ</th></tr></thead><tbody>`;
+        for (const typeId in byReceiptType) {
+            html += `<tr><td>${allData.receiptTypesMap.get(parseInt(typeId)) || 'غير معروف'}</td><td>${byReceiptType[typeId].count}</td><td>${formatCurrency(byReceiptType[typeId].total)}</td></tr>`;
+        }
+        html += `</tbody></table></div>`;
+
+        // 3. By Collector
+        const byCollector = {};
+        transactions.forEach(t => {
+            if (!byCollector[t.userId]) byCollector[t.userId] = { count: 0, total: 0 };
+            byCollector[t.userId].count++;
+            byCollector[t.userId].total += t.amount;
+        });
+        html += `<div class="card mt-2"><div class="card-header"><h4>نشاط المحصلين</h4></div>
+                 <table class="table"><thead><tr><th>اسم المحصل</th><th>عدد السندات</th><th>إجمالي المبلغ</th></tr></thead><tbody>`;
+        for (const userId in byCollector) {
+            html += `<tr><td>${allData.usersMap.get(parseInt(userId))?.username || 'غير معروف'}</td><td>${byCollector[userId].count}</td><td>${formatCurrency(byCollector[userId].total)}</td></tr>`;
+        }
+        html += `</tbody></table></div>`;
+
+        return html;
+    }
+
+    async function generateCollectorsActivityReport(allTransactions, branchId, allData) {
+        const transactions = allTransactions.filter(t => t.branchId === branchId);
+        const branchName = allData.branchesMap.get(branchId);
+        const pointsInBranch = allData.points.filter(p => p.branchId === branchId);
+        
+        let html = `<h2>نشاط المحصلين في فرع: ${branchName}</h2>`;
+
+        for (const point of pointsInBranch) {
+            const byCollector = {};
+            const collectorsInPoint = allData.users.filter(u => u.pointId === point.id);
+            
+            // Initialize all collectors for this point
+            collectorsInPoint.forEach(c => {
+                 if (!byCollector[c.id]) {
+                    byCollector[c.id] = {
+                        count: 0,
+                        total: 0,
+                        username: c.username,
+                        lastLogin: c.lastLogin ? new Date(c.lastLogin).toLocaleString('ar-EG') : 'لم يسجل دخول',
+                        lastReceiptDate: c.lastReceiptDate || null,
+                    };
+                }
+            });
+
+            // Aggregate transaction data
+            transactions.filter(t => t.pointId === point.id).forEach(t => {
+                if (!byCollector[t.userId]) { // A collector might not be assigned anymore but has transactions
+                    const user = allData.usersMap.get(t.userId);
+                    byCollector[t.userId] = {
+                        count: 0,
+                        total: 0,
+                        username: user?.username || 'مستخدم محذوف',
+                        lastLogin: user?.lastLogin ? new Date(user.lastLogin).toLocaleString('ar-EG') : 'لم يسجل دخول',
+                        lastReceiptDate: null
+                    }
+                }
+                byCollector[t.userId].count++;
+                byCollector[t.userId].total += t.amount;
+            });
+            
+            const sortedCollectors = Object.values(byCollector).sort((a,b) => {
+                 if (!a.lastReceiptDate) return 1;
+                 if (!b.lastReceiptDate) return -1;
+                 return new Date(b.lastReceiptDate) - new Date(a.lastReceiptDate); // Newest first
+            });
+
+            html += `<div class="card"><div class="card-header"><h4>نقطة: ${point.name}</h4></div>
+                     <table class="table"><thead><tr><th>اسم المحصل</th><th>عدد السندات</th><th>إجمالي المبلغ</th><th>آخر تسجيل دخول</th><th>تاريخ آخر سند</th></tr></thead><tbody>`;
+            
+            if(sortedCollectors.length === 0) {
+                 html += `<tr><td colspan="5">لا يوجد نشاط مسجل في هذه النقطة.</td></tr>`;
+            } else {
+                sortedCollectors.forEach(data => {
+                    html += `<tr>
+                                <td>${data.username}</td>
+                                <td>${data.count}</td>
+                                <td>${formatCurrency(data.total)}</td>
+                                <td>${data.lastLogin}</td>
+                                <td>${data.lastReceiptDate ? new Date(data.lastReceiptDate).toLocaleString('ar-EG') : 'لا يوجد'}</td>
+                             </tr>`;
+                });
+            }
+            
+            html += `</tbody></table></div>`;
+        }
+        return html;
+    }
+
+
+    // --- Audit Log ---
+    async function logAction(username, action, details = {}) {
+        await addData('auditLog', {
+            timestamp: new Date().toISOString(),
+            username: username,
+            action: action,
+            details: JSON.stringify(details)
+        });
+    }
+
+    async function loadAuditLogPage() {
+        const tableBody = document.querySelector('#audit-log-table tbody');
+        tableBody.innerHTML = '<tr><td colspan="4">جاري التحميل...</td></tr>';
+        const logs = (await getAllData('auditLog')).sort((a,b) => new Date(b.timestamp) - new Date(a.timestamp));
+        tableBody.innerHTML = '';
+        logs.forEach(log => {
+            const tr = document.createElement('tr');
+            tr.innerHTML = `
+                <td>${new Date(log.timestamp).toLocaleString('ar-EG')}</td>
+                <td>${log.username}</td>
+                <td>${log.action}</td>
+                <td><pre>${JSON.stringify(JSON.parse(log.details), null, 2)}</pre></td>
+            `;
+            tableBody.appendChild(tr);
+        });
+        
+        // Populate detailed log filters
+        populateBranchSelect(document.getElementById('log-filter-branch'), true);
+        populateUserSelect(document.getElementById('log-filter-user'), true);
+        document.getElementById('log-filter-branch').addEventListener('change', (e) => {
+            populatePointSelect(document.getElementById('log-filter-point'), e.target.value, true);
+        });
+    }
+    
+    document.getElementById('clear-audit-log-btn').addEventListener('click', () => {
+        openConfirmModal('هل أنت متأكد من مسح سجل العمليات بالكامل؟ لا يمكن التراجع عن هذا الإجراء.', async () => {
+            await clearStore('auditLog');
+            logAction(currentUser.username, 'مسح سجل العمليات');
+            loadAuditLogPage();
+        });
+    });
+
+
+    // --- Search Page ---
+    function loadSearchPage() {
+        document.getElementById('search-results').innerHTML = '';
+        document.getElementById('main-search-form').reset();
+    }
+    
+    document.getElementById('search-type').addEventListener('change', (e) => {
+        const labels = {
+            bus: 'رقم المركبة',
+            driver: 'اسم السائق',
+            collector: 'اسم المحصل',
+            receipt: 'رقم السند'
+        };
+        document.getElementById('search-term-label').textContent = labels[e.target.value];
+    });
+
+    document.getElementById('main-search-form').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const type = document.getElementById('search-type').value;
+        const term = document.getElementById('search-term').value.trim().toLowerCase();
+        const resultsDiv = document.getElementById('search-results');
+        resultsDiv.innerHTML = '<h4><i class="fas fa-spinner fa-spin"></i> جاري البحث...</h4>';
+        
+        if (!term) {
+            resultsDiv.innerHTML = '<p class="text-danger">الرجاء إدخال قيمة للبحث.</p>';
+            return;
+        }
+
+        const allData = await fetchAllDataForReports();
+        let results = [];
+        let html = '';
+
+        switch (type) {
+            case 'bus':
+                results = allData.transactions.filter(t => t.vehiclePlate.toLowerCase().includes(term));
+                html = generateTransactionsTable(results, allData, `نتائج البحث عن الحافلة: ${term}`);
+                break;
+            case 'driver':
+                results = allData.transactions.filter(t => t.driverName.toLowerCase().includes(term));
+                html = generateTransactionsTable(results, allData, `نتائج البحث عن السائق: ${term}`);
+                break;
+            case 'collector':
+                const matchingUsers = allData.users.filter(u => u.username.toLowerCase().includes(term) && u.role === 'collector');
+                const userIds = matchingUsers.map(u => u.id);
+                results = allData.transactions.filter(t => userIds.includes(t.userId));
+                html = generateTransactionsTable(results, allData, `نتائج البحث عن المحصل: ${term}`);
+                break;
+            case 'receipt':
+                const transaction = await getData('transactions', parseInt(term));
+                results = transaction ? [transaction] : [];
+                html = generateTransactionsTable(results, allData, `نتائج البحث عن السند رقم: ${term}`);
+                break;
+        }
+        
+        resultsDiv.innerHTML = results.length > 0 ? html : `<p>لا توجد نتائج بحث مطابقة.</p>`;
+    });
+
+    function generateTransactionsTable(transactions, allData, title) {
+        let table = `<div class="card"><div class="card-header"><h3>${title}</h3></div>
+                     <div style="overflow-x:auto;"><table class="table"><thead><tr>
+                         <th>رقم السند</th><th>التاريخ</th><th>نوع السند</th><th>المبلغ</th>
+                         <th>السائق</th><th>خط السير</th><th>النقطة</th><th>المستخدم</th>
+                     </tr></thead><tbody>`;
+        
+        transactions.forEach(t => {
+            const receiptName = allData.receiptTypesMap.get(t.receiptTypeId) || 'N/A';
+            const pointName = allData.pointsMap.get(t.pointId) || 'N/A';
+            const userName = allData.usersMap.get(t.userId)?.username || 'N/A';
+            
+            table += `<tr>
+                        <td>${t.id.toString().padStart(8, '0')}</td>
+                        <td>${new Date(t.timestamp).toLocaleString('ar-EG')}</td>
+                        <td>${receiptName}</td>
+                        <td>${formatCurrency(t.amount)}</td>
+                        <td>${t.driverName}</td>
+                        <td>${t.routeFrom} - ${t.routeTo}</td>
+                        <td>${pointName}</td>
+                        <td>${userName}</td>
+                      </tr>`;
+        });
+
+        table += `</tbody></table></div></div>`;
+        return table;
+    }
+
+
+    // --- Reports Page ---
+    async function loadReportsPage() {
+        // Financial Reports
+        await generateFinancialReportGeneral();
+        
+        const branchSelect = document.getElementById('financial-report-branch-select');
+        await populateBranchSelect(branchSelect);
+        branchSelect.addEventListener('change', (e) => generateFinancialReportDetailed(e.target.value));
+        if(branchSelect.options.length > 1) {
+            generateFinancialReportDetailed(branchSelect.options[1].value); // Load first branch by default
+        }
+        
+        // Statistical Reports
+        await generateStatisticalReport();
+    }
+    
+    async function generateFinancialReportGeneral() {
+        const table = document.getElementById('financial-report-general');
+        table.innerHTML = '<tbody><tr><td>جاري التحميل...</td></tr></tbody>';
+
+        const allData = await fetchAllDataForReports();
+        const branches = allData.branches;
+        const transactions = allData.transactions;
+
+        const months = ['يناير', 'فبراير', 'مارس', 'أبريل', 'مايو', 'يونيو', 'يوليو', 'أغسطس', 'سبتمبر', 'أكتوبر', 'نوفمبر', 'ديسمبر'];
+        const reportData = Array(12).fill(0).map(() => ({}));
+        
+        transactions.forEach(t => {
+            const month = new Date(t.timestamp).getMonth(); // 0-11
+            reportData[month][t.branchId] = (reportData[month][t.branchId] || 0) + t.amount;
+        });
+
+        let header = '<thead><tr><th>الشهر</th>';
+        branches.forEach(b => header += `<th>${b.name}</th>`);
+        header += '<th>الإجمالي الشهري</th></tr></thead>';
+        
+        let body = '<tbody>';
+        const branchTotals = {};
+        let grandTotal = 0;
+        
+        months.forEach((monthName, i) => {
+            body += `<tr><td>${monthName}</td>`;
+            let monthTotal = 0;
+            branches.forEach(b => {
+                const val = reportData[i][b.id] || 0;
+                body += `<td>${formatCurrency(val)}</td>`;
+                monthTotal += val;
+                branchTotals[b.id] = (branchTotals[b.id] || 0) + val;
+            });
+            body += `<td><strong>${formatCurrency(monthTotal)}</strong></td></tr>`;
+            grandTotal += monthTotal;
+        });
+        
+        let footer = '<tr style="font-weight:bold; background-color: #e9ecef;"><td>الإجمالي العام</td>';
+        branches.forEach(b => {
+            footer += `<td>${formatCurrency(branchTotals[b.id] || 0)}</td>`;
+        });
+        footer += `<td><strong>${formatCurrency(grandTotal)}</strong></td></tr>`;
+        
+        body += footer + '</tbody>';
+        table.innerHTML = header + body;
+    }
+    
+    async function generateFinancialReportDetailed(branchId) {
+        if (!branchId) {
+             document.getElementById('financial-report-detailed').innerHTML = '';
+             return;
+        }
+        branchId = parseInt(branchId);
+        const table = document.getElementById('financial-report-detailed');
+        table.innerHTML = '<tbody><tr><td>جاري التحميل...</td></tr></tbody>';
+
+        const allData = await fetchAllDataForReports();
+        const points = allData.points.filter(p => p.branchId === branchId);
+        const transactions = allData.transactions.filter(t => t.branchId === branchId);
+
+        // Same logic as general report, but with points instead of branches
+        const months = ['يناير', 'فبراير', 'مارس', 'أبريل', 'مايو', 'يونيو', 'يوليو', 'أغسطس', 'سبتمبر', 'أكتوبر', 'نوفمبر', 'ديسمبر'];
+        const reportData = Array(12).fill(0).map(() => ({}));
+        
+        transactions.forEach(t => {
+            const month = new Date(t.timestamp).getMonth();
+            reportData[month][t.pointId] = (reportData[month][t.pointId] || 0) + t.amount;
+        });
+
+        let header = '<thead><tr><th>الشهر</th>';
+        points.forEach(p => header += `<th>${p.name}</th>`);
+        header += '<th>الإجمالي الشهري</th></tr></thead>';
+        
+        let body = '<tbody>';
+        const pointTotals = {};
+        let grandTotal = 0;
+        
+        months.forEach((monthName, i) => {
+            body += `<tr><td>${monthName}</td>`;
+            let monthTotal = 0;
+            points.forEach(p => {
+                const val = reportData[i][p.id] || 0;
+                body += `<td>${formatCurrency(val)}</td>`;
+                monthTotal += val;
+                pointTotals[p.id] = (pointTotals[p.id] || 0) + val;
+            });
+            body += `<td><strong>${formatCurrency(monthTotal)}</strong></td></tr>`;
+            grandTotal += monthTotal;
+        });
+        
+        let footer = '<tr style="font-weight:bold; background-color: #e9ecef;"><td>الإجمالي العام</td>';
+        points.forEach(p => {
+            footer += `<td>${formatCurrency(pointTotals[p.id] || 0)}</td>`;
+        });
+        footer += `<td><strong>${formatCurrency(grandTotal)}</strong></td></tr>`;
+        
+        body += footer + '</tbody>';
+        table.innerHTML = header + body;
+    }
+    
+    async function generateStatisticalReport() {
+        const allData = await fetchAllDataForReports();
+        
+        // General Stats
+        const totalReceipts = allData.transactions.length;
+        const totalRevenue = allData.transactions.reduce((sum, t) => sum + t.amount, 0);
+        const activeCollectors = allData.users.filter(u => u.role === 'collector' && u.status === 'active').length;
+        
+        const revenueByBranch = allData.transactions.reduce((acc, t) => {
+            acc[t.branchId] = (acc[t.branchId] || 0) + t.amount;
+            return acc;
+        }, {});
+        
+        let topBranchId = null;
+        let maxRevenue = 0;
+        for (const branchId in revenueByBranch) {
+            if (revenueByBranch[branchId] > maxRevenue) {
+                maxRevenue = revenueByBranch[branchId];
+                topBranchId = branchId;
+            }
+        }
+        const topBranchName = topBranchId ? allData.branchesMap.get(parseInt(topBranchId)) : 'لا يوجد';
+        
+        document.getElementById('stats-total-receipts').textContent = totalReceipts;
+        document.getElementById('stats-total-revenue').textContent = formatCurrency(totalRevenue);
+        document.getElementById('stats-active-collectors').textContent = activeCollectors;
+        document.getElementById('stats-top-branch').textContent = topBranchName;
+        
+        // Route Traffic
+        const routeTraffic = allData.transactions.reduce((acc, t) => {
+            const routeKey = `${t.routeFrom} → ${t.routeTo}`;
+            acc[routeKey] = (acc[routeKey] || 0) + 1;
+            return acc;
+        }, {});
+
+        const sortedRoutes = Object.entries(routeTraffic).sort(([,a],[,b]) => b - a).slice(0, 10);
+        
+        let routeHtml = `<div class="card"><div class="card-header"><h4>أكثر 10 خطوط سير ازدحاماً</h4></div>
+                         <table class="table"><thead><tr><th>خط السير</th><th>عدد الرحلات</th></tr></thead><tbody>`;
+        sortedRoutes.forEach(([route, count]) => {
+            routeHtml += `<tr><td>${route}</td><td>${count}</td></tr>`;
+        });
+        routeHtml += `</tbody></table></div>`;
+        document.getElementById('stats-route-traffic').innerHTML = routeHtml;
+    }
+
+
+    // --- Offline & Sync Functionality ---
+    const syncStatusText = document.getElementById('sync-text');
+    const syncIndicator = document.getElementById('sync-indicator');
+    const unsyncedCountEl = document.getElementById('unsynced-count');
+
+    function checkOnlineStatus() {
+        const isOnline = navigator.onLine;
+        syncIndicator.classList.toggle('online', isOnline);
+        syncStatusText.textContent = isOnline ? 'متصل' : 'غير متصل';
+        if (isOnline) {
+            // Trigger sync automatically when connection returns
+            syncData();
+        }
+    }
+
+    async function updateUnsyncedCount() {
+        const unsynced = await getDataByIndex('transactions', 'synced', false);
+        unsyncedCountEl.textContent = unsynced.length;
+    }
+
+    async function syncData() {
+        if (!navigator.onLine) {
+            console.log("Offline. Sync aborted.");
+            return;
+        }
+
+        const unsyncedTransactions = await getDataByIndex('transactions', 'synced', false);
+        if (unsyncedTransactions.length === 0) {
+            console.log("All data is synced.");
+            return;
+        }
+
+        console.log(`Syncing ${unsyncedTransactions.length} transactions...`);
+        // --- This is a simulation of sending data to a server ---
+        // In a real app, you would loop and `fetch` to a server endpoint.
+        // For this demo, we'll just mark them as synced after a delay.
+        
+        for (const transaction of unsyncedTransactions) {
+            // SIMULATE API CALL
+            await new Promise(resolve => setTimeout(resolve, 100)); // Simulate network latency
+            
+            // On successful API response:
+            transaction.synced = true;
+            await updateData('transactions', transaction);
+            console.log(`Synced transaction ID: ${transaction.id}`);
+            
+            await updateUnsyncedCount();
+        }
+        
+        console.log("Sync complete.");
+        alert('تمت مزامنة البيانات بنجاح!');
+        // Refresh current view if it contains sync status
+        if(document.getElementById('page-my-activity').classList.contains('active')) {
+            loadMyActivityPage();
+        }
+    }
+    
+    document.getElementById('manual-sync-btn').addEventListener('click', syncData);
+
+
+    // --- Helper & Utility Functions ---
+    async function populateBranchSelect(selectElement, includeAllOption = false, forAdmin = false) {
+        selectElement.innerHTML = '<option value="">-- اختر --</option>';
+        if (includeAllOption) {
+            selectElement.innerHTML += '<option value="all">الكل</option>';
+        }
+        const branches = await getAllData('branches');
+        branches.forEach(branch => {
+            if (forAdmin || !currentUser.branchId || currentUser.branchId === branch.id) {
+                const option = document.createElement('option');
+                option.value = branch.id;
+                option.textContent = branch.name;
+                selectElement.appendChild(option);
+            }
+        });
+    }
+
+    async function populatePointSelect(selectElement, branchId, includeAllOptionForSupervisor = false) {
+        selectElement.innerHTML = '<option value="">-- اختر --</option>';
+        if (includeAllOptionForSupervisor && currentUser.role === 'supervisor') {
+             selectElement.innerHTML += '<option value="all">الكل</option>';
+        }
+        if (branchId && branchId !== 'all') {
+            const points = await getDataByIndex('points', 'branchId', parseInt(branchId));
+            points.forEach(point => {
+                const option = document.createElement('option');
+                option.value = point.id;
+                option.textContent = point.name;
+                selectElement.appendChild(option);
+            });
+        }
+    }
+    
+    async function populateUserSelect(selectElement, includeAllOption = false) {
+        selectElement.innerHTML = '<option value="">-- اختر --</option>';
+        if (includeAllOption) {
+            selectElement.innerHTML += '<option value="all">الكل</option>';
+        }
+        const users = await getAllData('users');
+        users.forEach(user => {
+            const option = document.createElement('option');
+            option.value = user.id;
+            option.textContent = user.username;
+            selectElement.appendChild(option);
+        });
+    }
+    
+    function translateRole(role) {
+        const roles = { admin: 'أدمن', supervisor: 'مشرف', collector: 'محصل' };
+        return roles[role] || role;
+    }
+    
+    function formatCurrency(amount) {
+        return new Intl.NumberFormat('ar-YE', { style: 'currency', currency: 'YER', minimumFractionDigits: 0 }).format(amount);
+    }
+    
+    async function fetchAllDataForReports() {
+        const [transactions, users, branches, points, receiptTypes] = await Promise.all([
+            getAllData('transactions'),
+            getAllData('users'),
+            getAllData('branches'),
+            getAllData('points'),
+            getAllData('receiptTypes')
+        ]);
+        
+        return {
+            transactions,
+            users,
+            branches,
+            points,
+            receiptTypes,
+            usersMap: new Map(users.map(u => [u.id, u])),
+            branchesMap: new Map(branches.map(b => [b.id, b.name])),
+            pointsMap: new Map(points.map(p => [p.id, p.name])),
+            receiptTypesMap: new Map(receiptTypes.map(rt => [rt.id, rt.name])),
+        }
+    }
+
+    // --- Modal Logic ---
+    function openConfirmModal(message, callback) {
+        document.getElementById('confirm-modal-body').textContent = message;
+        confirmCallback = callback;
+        confirmModal.classList.add('show');
+    }
+
+    function closeAllModals() {
+        document.querySelectorAll('.modal').forEach(m => m.classList.remove('show'));
+    }
+    
+    document.getElementById('confirm-modal-yes').addEventListener('click', () => {
+        if (confirmCallback) {
+            confirmCallback();
+        }
+        closeAllModals();
+    });
+    
+    document.querySelectorAll('.close-modal, #confirm-modal-no').forEach(el => {
+        el.addEventListener('click', closeAllModals);
+    });
+    
+    window.addEventListener('click', (event) => {
+        if (event.target.classList.contains('modal')) {
+            closeAllModals();
+        }
+    });
+
+
+    // --- Initial Application Setup ---
+    function init() {
+        initDB().then(() => {
+            console.log("DB Initialized. Setting up application.");
+            
+            // Event Listeners
+            loginForm.addEventListener('submit', handleLogin);
+            logoutBtn.addEventListener('click', handleLogout);
+            
+            document.getElementById('sidebar-toggle').addEventListener('click', () => {
+                appContainer.classList.toggle('sidebar-collapsed');
+            });
+            
+            document.body.addEventListener('click', (e) => {
+                const navLink = e.target.closest('.nav-link');
+                const dashboardCard = e.target.closest('.dashboard-card');
+
+                if (navLink) {
+                    e.preventDefault();
+                    showPage(navLink.dataset.page);
+                } else if (dashboardCard) {
+                    e.preventDefault();
+                    showPage(dashboardCard.dataset.page);
+                }
+            });
+
+            // Online/Offline listeners
+            window.addEventListener('online', checkOnlineStatus);
+            window.addEventListener('offline', checkOnlineStatus);
+
+            // Initial checks
+            checkSession();
+            checkOnlineStatus();
+            updateUnsyncedCount();
+            
+            // Periodically check for sync (fallback)
+            setInterval(checkOnlineStatus, 30000); // Check every 30 seconds
+
+        }).catch(err => {
+            console.error("Failed to initialize application:", err);
+            alert("حدث خطأ فادح أثناء تهيئة قاعدة البيانات. قد لا يعمل التطبيق بشكل صحيح.");
+        });
+    }
+
+    // Start the application
+    init();
+
+});
+
+// ===================================================================================
+// ============================== END OF JAVASCRIPT CODE =============================
+// ===================================================================================
+</script>
+
+</body>
+</html>
